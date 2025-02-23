@@ -12,7 +12,7 @@ public class PrizeSet implements WeightedItem<Prize> {
     public static final Codec<PrizeSet> CODEC = RecordCodecBuilder.create(instance -> instance.group(
             Codec.DOUBLE.fieldOf("chance").forGetter(PrizeSet::chance),
             Prize.CODEC.listOf().fieldOf("items").forGetter(PrizeSet::prizes)
-    ).apply(instance, instance.stable(PrizeSet::new)));
+    ).apply(instance, PrizeSet::new));
 
     private double chance;
     private List<Prize> prizes;

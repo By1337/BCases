@@ -1,0 +1,7 @@
+blocks:
+  - block: end_portal_frame
+    world: world
+    pos:
+      x: 0
+      y: 100
+      z: 0

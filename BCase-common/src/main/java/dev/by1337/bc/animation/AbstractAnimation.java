@@ -77,9 +77,10 @@ public abstract class AbstractAnimation implements Animation {
                 animate();
             } catch (InterruptedException ignored) {
             }
-            running = false;
-            tracker.removeAll();
+        } catch (Throwable t) {
+            logger.error("Failed to play animation", t);
         } finally {
+            running = false;
             if (!closed) {
                 try {
                     sync(this::onEnd0).start().join();
@@ -180,6 +181,7 @@ public abstract class AbstractAnimation implements Animation {
     private void onEnd0() {
         AsyncCatcher.catchOp("AbstractAnimation#onEnd0");
         ticker.stop();
+        tracker.removeAll();
         System.out.println("AbstractAnimation.onEnd0");
         try {
             onEnd();

@@ -73,7 +73,7 @@ public class RandMobs extends AbstractAnimation {
             forceStop();
             return;
         }
-        sendTitle("", "&cУдарь моба!", 5, 30, 10);
+        sendTitle("", config.title, 5, 30, 10);
         waitClick = true;
         waitUpdate(config.clickWait);
         waitClick = false;
@@ -111,6 +111,7 @@ public class RandMobs extends AbstractAnimation {
     protected void onEnd() {
         caseBlock.showBlock();
         caseBlock.showHologram();
+        caseBlock.givePrize(winner, player);
     }
 
     @Override
@@ -130,7 +131,8 @@ public class RandMobs extends AbstractAnimation {
                 Codec.LONG.fieldOf("spawn_delay").forGetter(v -> v.spawnDelay),
                 Codec.LONG.fieldOf("click_wait").forGetter(v -> v.clickWait),
                 Codec.LONG.fieldOf("idle").forGetter(v -> v.idle),
-                Codec.LONG.fieldOf("before_end").forGetter(v -> v.beforeEnd)
+                Codec.LONG.fieldOf("before_end").forGetter(v -> v.beforeEnd),
+                Codec.STRING.fieldOf("title").forGetter(v -> v.title)
         ).apply(instance, Config::new));
         private final List<Vec3d> positions;
         private final List<VirtualEntityType> mobs;
@@ -138,14 +140,16 @@ public class RandMobs extends AbstractAnimation {
         private final long clickWait;
         private final long idle;
         private final long beforeEnd;
+        private final String title;
 
-        public Config(List<Vec3d> positions, List<VirtualEntityType> mobs, long spawnDelay, long clickWait, long idle, long beforeEnd) {
+        public Config(List<Vec3d> positions, List<VirtualEntityType> mobs, long spawnDelay, long clickWait, long idle, long beforeEnd, String title) {
             this.positions = positions;
             this.mobs = mobs;
             this.spawnDelay = spawnDelay;
             this.clickWait = clickWait;
             this.idle = idle;
             this.beforeEnd = beforeEnd;
+            this.title = title;
         }
 
         public Config() {
@@ -166,6 +170,7 @@ public class RandMobs extends AbstractAnimation {
             clickWait = 10_000;
             idle = 3_000;
             beforeEnd = 4_000;
+            title = "&cNONE";
         }
     }
 }

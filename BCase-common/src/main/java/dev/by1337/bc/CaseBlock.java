@@ -1,7 +1,9 @@
 package dev.by1337.bc;
 
 import dev.by1337.bc.annotations.SyncOnly;
+import dev.by1337.bc.prize.Prize;
 import dev.by1337.bc.world.WorldGetter;
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.by1337.blib.geom.Vec3i;
 
@@ -21,6 +23,9 @@ public interface CaseBlock {
 
     @SyncOnly
     void showHologram();
+
+    @SyncOnly
+    void givePrize(Prize prize, Player player);
 
     Plugin plugin();
 }

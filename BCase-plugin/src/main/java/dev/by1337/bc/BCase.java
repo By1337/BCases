@@ -2,6 +2,7 @@ package dev.by1337.bc;
 
 import dev.by1337.bc.animation.AnimationContext;
 import dev.by1337.bc.animation.AnimationContextImpl;
+import dev.by1337.bc.animation.AnimationLoader;
 import dev.by1337.bc.bd.Database;
 import dev.by1337.bc.db.DebugDatabase;
 import dev.by1337.bc.prize.PrizeMap;
@@ -9,6 +10,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.by1337.blib.util.ResourceUtil;
 import org.by1337.blib.util.invoke.LambdaMetafactoryUtil;
 
+import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.function.BiConsumer;
@@ -19,9 +21,13 @@ public class BCase extends JavaPlugin {
     private BlockManager blockManager;
     private Database database;
     private AnimationContext animationContext;
+    private AnimationLoader animationLoader;
 
     @Override
     public void onLoad() {
+        if (!new File(getDataFolder(), "animations").exists()) {
+            ResourceUtil.saveIfNotExist("animations/randMobs.yml", this);
+        }
     }
 
     @Override
@@ -30,6 +36,9 @@ public class BCase extends JavaPlugin {
         blockManager = new BlockManager(this);
         database = new DebugDatabase();
         animationContext = new AnimationContextImpl(this);
+        //todo register custom animations
+        animationLoader = new AnimationLoader(this);
+        animationLoader.load();
     }
 
     @Override
@@ -65,6 +74,10 @@ public class BCase extends JavaPlugin {
 
     public AnimationContext animationContext() {
         return animationContext;
+    }
+
+    public AnimationLoader animationLoader() {
+        return animationLoader;
     }
 
     static {

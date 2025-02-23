@@ -3,7 +3,9 @@ package dev.by1337.bc;
 import blib.com.mojang.serialization.Codec;
 import blib.com.mojang.serialization.codecs.RecordCodecBuilder;
 import dev.by1337.bc.animation.Animation;
+import dev.by1337.bc.animation.AnimationLoader;
 import dev.by1337.bc.animation.impl.RandMobs;
+import dev.by1337.bc.prize.Prize;
 import dev.by1337.bc.util.AsyncCatcher;
 import dev.by1337.bc.world.WorldGetter;
 import dev.by1337.bc.yaml.CashedYamlContext;
@@ -42,12 +44,11 @@ public class CaseBlockImpl implements CaseBlock, Closeable {
     public void onClick(Player player) {
         System.out.println(player + " Clicked at block " + pos);
         if (animation == null) {
-            animation = new RandMobs(
+            animation = plugin.animationLoader().getAnimation("random_mobs").create(
                     this,
                     plugin.animationContext(),
                     this::onAnimationStop,
                     plugin.prizeMap().getPrizes("default"),
-                    new CashedYamlContext(new YamlContext(new YamlConfiguration())),
                     player
             );
             animation.play();
@@ -105,6 +106,14 @@ public class CaseBlockImpl implements CaseBlock, Closeable {
     @Override
     public void showHologram() {
         //todo должно работать даже после #destroyHologram
+    }
+
+    @Override
+    public void givePrize(Prize prize, Player player) {
+        AsyncCatcher.catchOp("BlockCase#givePrize");
+        for (String giveCommand : prize.giveCommands()) {
+            System.out.println("Типо выдал игроку " + giveCommand);
+        }
     }
 
     @Override

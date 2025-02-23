@@ -1,6 +1,7 @@
 package dev.by1337.bc.animation;
 
 import dev.by1337.bc.CaseBlock;
+import dev.by1337.bc.animation.impl.RandMobs;
 import dev.by1337.bc.prize.PrizeSelector;
 import dev.by1337.bc.yaml.CashedYamlContext;
 import org.bukkit.entity.Player;
@@ -9,7 +10,7 @@ import org.by1337.blib.util.collection.SpacedNameRegistry;
 
 public class AnimationRegistry extends SpacedNameRegistry<AnimationRegistry.AnimationCreator> {
     public static final AnimationRegistry INSTANCE = new AnimationRegistry();
-
+    public static AnimationCreator RAND_MOBS = INSTANCE.register("default:rand_mobs", RandMobs::new);
 
     private AnimationRegistry() {
     }

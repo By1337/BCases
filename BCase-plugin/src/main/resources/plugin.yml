@@ -1,0 +1,13 @@
+name: BCases
+main: dev.by1337.bc.BCase
+version: 1.0
+api-version: '1.16'
+depend:
+  - BLib
+  - VirtualEntityApi
+  - BMenu
+
+commands:
+  bcases:
+    aliases:
+      - bc

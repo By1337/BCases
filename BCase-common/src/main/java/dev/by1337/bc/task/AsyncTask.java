@@ -66,7 +66,6 @@ public abstract class AsyncTask implements Runnable {
 
     public void tick() {
         if (cancelled) return;
-        ticks = 0;
         run();
     }
 

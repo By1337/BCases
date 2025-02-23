@@ -3,6 +3,7 @@ package dev.by1337.bc.animation;
 import dev.by1337.bc.CaseBlock;
 import dev.by1337.bc.prize.PrizeSelector;
 import dev.by1337.bc.yaml.CashedYamlContext;
+import org.bukkit.entity.Player;
 import org.by1337.blib.util.SpacedNameKey;
 import org.by1337.blib.util.collection.SpacedNameRegistry;
 
@@ -24,6 +25,6 @@ public class AnimationRegistry extends SpacedNameRegistry<AnimationRegistry.Anim
 
     @FunctionalInterface
     public interface AnimationCreator {
-        Animation create(CaseBlock caseBlock, AnimationContext context, Runnable onEndCallback, PrizeSelector prizeSelector, CashedYamlContext config);
+        Animation create(CaseBlock caseBlock, AnimationContext context, Runnable onEndCallback, PrizeSelector prizeSelector, CashedYamlContext config, Player player);
     }
 }

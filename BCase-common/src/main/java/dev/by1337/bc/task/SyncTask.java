@@ -39,6 +39,9 @@ public class SyncTask {
     }
 
     public void join() throws InterruptedException {
+        if (Bukkit.isPrimaryThread()) {
+            throw new IllegalStateException("It is not possible to execute SyncTask#join from the main thread!");
+        }
         synchronized (this) {
             if (isDone) return;
             wait();

@@ -1,5 +1,6 @@
 package dev.by1337.bc;
 
+import com.destroystokyo.paper.event.player.PlayerUseUnknownEntityEvent;
 import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -59,6 +60,17 @@ public class BlockManager implements Listener, Closeable {
             blockList.remove(caseBlock);
         }
         return caseBlock;
+    }
+
+    @EventHandler
+    public void onUseUnknownEntity(PlayerUseUnknownEntityEvent event){
+        int entityId = event.getEntityId();
+        Player player = event.getPlayer();
+        for (CaseBlockImpl caseBlock : blockList) {
+            if (caseBlock.onUseUnknownEntity(entityId, player)) {
+                return;
+            }
+        }
     }
 
     @EventHandler

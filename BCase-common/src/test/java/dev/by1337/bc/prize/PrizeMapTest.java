@@ -1,7 +1,9 @@
 package dev.by1337.bc.prize;
 
 import org.by1337.blib.configuration.YamlOps;
+import org.by1337.blib.geom.Vec3d;
 import org.by1337.blib.random.WeightedItem;
+import org.by1337.blib.util.Direction;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -27,6 +29,8 @@ public class PrizeMapTest {
         PrizeMap decoded = PrizeMap.CODEC.decode(YamlOps.INSTANCE, v).getOrThrow().getFirst();
 
         Assert.assertEquals(prizeMap, decoded);
+
+
     }
 
     private Prize createPrize() {

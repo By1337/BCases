@@ -38,4 +38,8 @@ public class PrizeMap {
     public int hashCode() {
         return Objects.hashCode(prizes);
     }
+
+    public PrizeSelector getPrizes(String id) {
+        return Objects.requireNonNull(prizes.get(id), "Unknown prize " + id);
+    }
 }

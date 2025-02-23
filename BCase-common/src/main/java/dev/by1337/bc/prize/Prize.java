@@ -2,6 +2,7 @@ package dev.by1337.bc.prize;
 
 import blib.com.mojang.serialization.Codec;
 import blib.com.mojang.serialization.codecs.RecordCodecBuilder;
+import dev.by1337.virtualentity.api.virtual.item.VirtualItem;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
@@ -9,6 +10,7 @@ import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.by1337.blib.BLib;
 import org.by1337.blib.chat.placeholder.Placeholder;
+import org.by1337.blib.geom.Vec3d;
 import org.by1337.blib.random.WeightedItem;
 import org.by1337.bmenu.hook.ItemStackCreator;
 
@@ -56,6 +58,17 @@ public class Prize extends Placeholder implements WeightedItem<Prize> {
         }
 
         registerPlaceholder("{prize_name}", this::displayName);
+    }
+
+    public VirtualItem createVirtualItem(Vec3d pos){
+        VirtualItem item = VirtualItem.create();
+        item.setPos(pos);
+        item.setItem(itemStack);
+        item.setCustomNameVisible(true);
+        item.setCustomName(displayNameComponent);
+        item.setNoGravity(true);
+        item.setMotion(Vec3d.ZERO);
+        return item;
     }
 
     @Override

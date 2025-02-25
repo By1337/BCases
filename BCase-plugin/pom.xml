@@ -99,6 +99,10 @@
             <id>by1337-repo</id>
             <url>https://repo.by1337.space/repository/maven-releases/</url>
         </repository>
+        <repository>
+            <id>placeholderapi</id>
+            <url>https://repo.extendedclip.com/content/repositories/placeholderapi/</url>
+        </repository>
     </repositories>
 
     <dependencies>
@@ -129,6 +133,12 @@
             <groupId>dev.by1337.virtualentity.api</groupId>
             <artifactId>VirtualEntityApi-api</artifactId>
             <version>1.1</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>me.clip</groupId>
+            <artifactId>placeholderapi</artifactId>
+            <version>2.11.5</version>
             <scope>provided</scope>
         </dependency>
         <dependency>

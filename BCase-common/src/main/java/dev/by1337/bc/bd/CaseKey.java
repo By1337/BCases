@@ -1,0 +1,35 @@
+package dev.by1337.bc.bd;
+
+import blib.com.mojang.serialization.Codec;
+import blib.com.mojang.serialization.codecs.RecordCodecBuilder;
+import org.by1337.blib.chat.placeholder.Placeholder;
+
+public class CaseKey extends Placeholder { //todo placeholders
+    public static final Codec<CaseKey> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+            Codec.STRING.fieldOf("id").forGetter(CaseKey::id),
+            Codec.LONG.fieldOf("issue_date").forGetter(CaseKey::issueDate),
+            Codec.LONG.fieldOf("removal_date").forGetter(CaseKey::removalDate)
+    ).apply(instance, CaseKey::new));
+
+    private final String id;
+    private final long issueDate;
+    private final long removalDate;
+
+    public CaseKey(String id, long issueDate, long removalDate) {
+        this.id = id;
+        this.issueDate = issueDate;
+        this.removalDate = removalDate;
+    }
+
+    public String id() {
+        return id;
+    }
+
+    public long issueDate() {
+        return issueDate;
+    }
+
+    public long removalDate() {
+        return removalDate;
+    }
+}

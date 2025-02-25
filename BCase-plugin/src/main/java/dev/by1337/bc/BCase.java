@@ -4,7 +4,8 @@ import dev.by1337.bc.animation.AnimationContext;
 import dev.by1337.bc.animation.AnimationContextImpl;
 import dev.by1337.bc.animation.AnimationLoader;
 import dev.by1337.bc.bd.Database;
-import dev.by1337.bc.db.DebugDatabase;
+import dev.by1337.bc.db.MemoryDatabase;
+import dev.by1337.bc.hook.papi.PapiHook;
 import dev.by1337.bc.prize.PrizeMap;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.by1337.blib.util.ResourceUtil;
@@ -22,6 +23,7 @@ public class BCase extends JavaPlugin {
     private Database database;
     private AnimationContext animationContext;
     private AnimationLoader animationLoader;
+    private PapiHook papiHook;
 
     @Override
     public void onLoad() {
@@ -34,7 +36,9 @@ public class BCase extends JavaPlugin {
     public void onEnable() {
         prizeMap = ResourceUtil.load("prizes.yml", this).get().decode(PrizeMap.CODEC).getOrThrow().getFirst();
         blockManager = new BlockManager(this);
-        database = new DebugDatabase();
+        database = new MemoryDatabase();
+        papiHook = new PapiHook(this, database);
+        papiHook.register();
         animationContext = new AnimationContextImpl(this);
         //todo register custom animations
         animationLoader = new AnimationLoader(this);
@@ -53,6 +57,7 @@ public class BCase extends JavaPlugin {
 
     private void onDisable0() {
         blockManager.close();
+        papiHook.unregister();
         try {
             database.close();
         } catch (IOException e) {

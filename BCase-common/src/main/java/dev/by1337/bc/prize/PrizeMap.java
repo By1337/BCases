@@ -2,6 +2,7 @@ package dev.by1337.bc.prize;
 
 import blib.com.mojang.serialization.Codec;
 import blib.com.mojang.serialization.codecs.RecordCodecBuilder;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Map;
 import java.util.Objects;
@@ -39,6 +40,7 @@ public class PrizeMap {
         return Objects.hashCode(prizes);
     }
 
+    @NotNull
     public PrizeSelector getPrizes(String id) {
         return Objects.requireNonNull(prizes.get(id), "Unknown prize " + id);
     }

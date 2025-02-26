@@ -7,7 +7,6 @@ depend:
   - VirtualEntityApi
   - BMenu
 
-commands:
-  bcases:
-    aliases:
-      - bc
+permissions:
+  bcase.*:
+    default: op

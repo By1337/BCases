@@ -1,6 +1,7 @@
 blocks:
   - block: end_portal_frame
     world: world
+    on_click_menu: bcase:default
     pos:
       x: 0
       y: 100

@@ -20,7 +20,7 @@ public class MemoryDatabase implements Database {
     @Override
     public User getUser(@NotNull Player player) {
         return users.computeIfAbsent(player.getUniqueId(), k -> new User(
-                player.getName(), k, new HashMap<>()
+                player.getName(), k, this, new HashMap<>()
         ));
     }
 

@@ -1,0 +1,31 @@
+id: bcase:default
+provider: bcase:case
+type: CHEST
+title: "&7Кейс"
+
+
+items:
+  open:
+    slot: 22
+    display_name: " &#ff7000&l▶ Открыть кейс"
+    lore:
+      - ""
+      - " &#ff7000• &fКоличество кейсов: &#ff7000%bcase_keys_count_of_type_default%"
+      - ""
+    material: CHEST
+    on_click:
+      requirements:
+        - check: '%bcase_keys_count_of_type_default% < 1'
+          commands:
+            - '[MESSAGE] &cУ Вас не достаточно ключей!'
+            - '[BREAK]'
+        - check: '{playing} == true'
+          commands:
+            - '[MESSAGE] &cКто-то уже открывает этот кейс!'
+            - '[CLOSE]'
+            - '[BREAK]'
+        - check: 'true == true'
+          commands:
+            - '[TAKE_KEY] default'
+            - '[PLAY] $random default'
+            - '[CLOSE]'

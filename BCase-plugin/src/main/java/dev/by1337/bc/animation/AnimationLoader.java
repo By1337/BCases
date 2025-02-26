@@ -3,6 +3,7 @@ package dev.by1337.bc.animation;
 import dev.by1337.bc.yaml.CashedYamlContext;
 import org.bukkit.plugin.Plugin;
 import org.by1337.blib.configuration.YamlConfig;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
@@ -11,15 +12,20 @@ import java.util.function.Predicate;
 
 public class AnimationLoader {
     private final Plugin plugin;
+    private final Random random = new Random();
     private final Map<String, AnimationData> animations = new HashMap<>();
+    private final List<AnimationData> animationDataList = new ArrayList<>();
 
     public AnimationLoader(Plugin plugin) {
         this.plugin = plugin;
     }
 
-    @Nullable
+    @NotNull
     public AnimationData getAnimation(String animationName) {
-        return animations.get(animationName);
+        return Objects.requireNonNull(animations.get(animationName), "Unknown animation: " + animationName);
+    }
+    public AnimationData getRandomAnimation() {
+        return animationDataList.get(random.nextInt(animationDataList.size()));
     }
 
     public void load() {
@@ -39,6 +45,7 @@ public class AnimationLoader {
                     throw new IllegalArgumentException("Duplicate id: " + id);
                 }
                 animations.put(id, data);
+                animationDataList.add(data);
             } catch (Throwable t) {
                 plugin.getSLF4JLogger().error("Failed to load animation from {}", file.getAbsolutePath(), t);
             }

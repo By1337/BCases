@@ -58,7 +58,6 @@ public class PapiHook extends PlaceholderExpansion {
 
     @Override
     public @Nullable String onPlaceholderRequest(Player player, @NotNull String params) {
-        System.out.println(params);
         return placeholder.process(player, params.split("_"));
     }
 }

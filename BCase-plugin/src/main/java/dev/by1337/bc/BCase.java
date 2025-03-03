@@ -48,6 +48,7 @@ public class BCase extends JavaPlugin {
     public void onLoad() {
         if (!new File(getDataFolder(), "animations").exists()) {
             ResourceUtil.saveIfNotExist("animations/randMobs.yml", this);
+            ResourceUtil.saveIfNotExist("animations/swords.yml", this);
         }
         if (!new File(getDataFolder(), "menu").exists()) {
             ResourceUtil.saveIfNotExist("menu/default.yml", this);
@@ -55,15 +56,18 @@ public class BCase extends JavaPlugin {
         message = new Message(getLogger());
         menuLoader = new MenuLoader(new File(getDataFolder(), "menu"), this);
         menuLoader.getRegistry().register(new SpacedNameKey("bcase:case"), CaseDefaultMenu::new);
+
     }
 
     @Override
     public void onEnable() {
-        prizeMap = ResourceUtil.load("prizes.yml", this).get().decode(PrizeMap.CODEC).getOrThrow().getFirst();
-        blockManager = new BlockManager(this);
         database = new MemoryDatabase();
         papiHook = new PapiHook(this, database);
         papiHook.register();
+
+        prizeMap = ResourceUtil.load("prizes.yml", this).get().decode(PrizeMap.CODEC).getOrThrow().getFirst();
+        blockManager = new BlockManager(this);
+
         animationContext = new AnimationContextImpl(this);
 
         commandWrapper = new CommandWrapper(createCommand(), this);

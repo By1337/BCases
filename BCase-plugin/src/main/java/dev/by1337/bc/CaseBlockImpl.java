@@ -6,6 +6,7 @@ import dev.by1337.bc.animation.Animation;
 import dev.by1337.bc.animation.AnimationContext;
 import dev.by1337.bc.animation.AnimationData;
 import dev.by1337.bc.bd.Database;
+import dev.by1337.bc.hologram.HologramManager;
 import dev.by1337.bc.menu.CaseDefaultMenu;
 import dev.by1337.bc.prize.Prize;
 import dev.by1337.bc.prize.PrizeMap;
@@ -22,6 +23,7 @@ import org.by1337.blib.configuration.serialization.BukkitCodecs;
 import org.by1337.blib.geom.Vec3i;
 import org.by1337.bmenu.Menu;
 import org.by1337.bmenu.MenuLoader;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.Closeable;
 
@@ -30,23 +32,27 @@ public class CaseBlockImpl extends Placeholder implements CaseBlock, Closeable {
             BukkitCodecs.BLOCK_DATA.fieldOf("block").forGetter(CaseBlockImpl::block),
             WorldGetter.CODEC.fieldOf("world").forGetter(CaseBlockImpl::worldGetter),
             Vec3i.CODEC.fieldOf("pos").forGetter(CaseBlockImpl::pos),
-            Codec.STRING.fieldOf("on_click_menu").forGetter(CaseBlockImpl::onClickMenu)
+            Codec.STRING.fieldOf("on_click_menu").forGetter(CaseBlockImpl::onClickMenu),
+            HologramManager.Config.CODEC.fieldOf("hologram").forGetter(v -> v.hologramManager.getConfig())
     ).apply(instance, CaseBlockImpl::new));
 
     private final BlockData block;
     private final WorldGetter worldGetter;
     private final Vec3i pos;
+    @Deprecated
     private final BCase plugin;
     private final String onClickMenu;
     private volatile Animation animation;
+    private final HologramManager hologramManager;
 
-    public CaseBlockImpl(BlockData block, WorldGetter worldGetter, Vec3i pos, String onClickMenu) {
+    public CaseBlockImpl(BlockData block, WorldGetter worldGetter, Vec3i pos, String onClickMenu, HologramManager.Config config) {
         this.block = block;
         this.worldGetter = worldGetter;
         this.pos = pos;
         this.onClickMenu = onClickMenu;
-        plugin = (BCase) ((PluginClassLoader) this.getClass().getClassLoader()).getPlugin();
+        plugin = (BCase) ((PluginClassLoader) this.getClass().getClassLoader()).getPlugin(); // todo не используй ебаные костыли
         registerPlaceholder("{playing}", () -> animation != null);
+        hologramManager = new HologramManager(worldGetter, pos, plugin, config);
     }
 
     public void onClick(Player player) {
@@ -89,7 +95,7 @@ public class CaseBlockImpl extends Placeholder implements CaseBlock, Closeable {
     }
 
     public void onWorldUnload() {
-        destroyHologram();
+        hideHologram();
         hideBlock();
     }
 
@@ -115,16 +121,12 @@ public class CaseBlockImpl extends Placeholder implements CaseBlock, Closeable {
 
     @Override
     public void hideHologram() {
-
-    }
-
-    public void destroyHologram() {
-        hideHologram(); // todo
+        hologramManager.hide();
     }
 
     @Override
     public void showHologram() {
-        //todo должно работать даже после #destroyHologram
+        hologramManager.show();
     }
 
     @Override
@@ -155,7 +157,7 @@ public class CaseBlockImpl extends Placeholder implements CaseBlock, Closeable {
         if (animation != null) {
             animation.forceStop();
         }
-        destroyHologram();
+        hologramManager.close();
         hideBlock();
     }
 
@@ -176,5 +178,10 @@ public class CaseBlockImpl extends Placeholder implements CaseBlock, Closeable {
     @Override
     public AnimationContext animationContext() {
         return plugin.animationContext();
+    }
+
+    @Nullable
+    public Animation animation() {
+        return animation;
     }
 }

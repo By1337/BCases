@@ -27,5 +27,6 @@ items:
         - check: 'true == true'
           commands:
             - '[TAKE_KEY] default'
-            - '[PLAY] $random default'
+            - '[PLAY] swords default'
+           # - '[PLAY] $random default'
             - '[CLOSE]'

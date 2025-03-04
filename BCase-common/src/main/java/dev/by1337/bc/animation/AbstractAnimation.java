@@ -15,7 +15,9 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Sound;
 import org.bukkit.World;
+import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
+import org.bukkit.event.player.PlayerInteractEvent;
 import org.by1337.blib.chat.util.Message;
 import org.by1337.blib.geom.Vec3d;
 import org.by1337.blib.geom.Vec3i;
@@ -104,7 +106,7 @@ public abstract class AbstractAnimation implements Animation {
     }
 
     @AsyncOnly
-    protected abstract void onStart();
+    protected abstract void onStart() throws InterruptedException;
 
     @AsyncOnly
     protected abstract void animate() throws InterruptedException;
@@ -217,6 +219,11 @@ public abstract class AbstractAnimation implements Animation {
                 logger.error("Failed to end animation", e);
             }
         }
+    }
+
+    @Override
+    public Player getPlayer() {
+        return player;
     }
 
     public void addTask(AsyncTask task) {

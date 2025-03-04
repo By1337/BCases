@@ -79,7 +79,15 @@ public class BlockManager implements Listener, Closeable {
         if (block == null) return;
         Player player = event.getPlayer();
         var clickedBlock = blocks.get(block.getLocation());
-        if (clickedBlock == null) return;
+        if (clickedBlock == null) {
+            for (CaseBlockImpl caseBlock : blockList) {
+                var anim = caseBlock.animation();
+                if (anim == null || !anim.getPlayer().equals(player)) continue;
+                anim.onInteract(event);
+                return;
+            }
+            return;
+        }
         event.setCancelled(true);
         Long cd = player.getPersistentDataContainer().get(cooldownKey, PersistentDataType.LONG);
         if (cd != null && cd > System.currentTimeMillis()) {

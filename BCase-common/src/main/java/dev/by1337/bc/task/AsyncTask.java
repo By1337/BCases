@@ -9,6 +9,7 @@ public abstract class AsyncTask implements Runnable {
     private long delay = 1;
     private volatile boolean cancelled;
     private long ticks;
+    private Runnable onEnd;
 
     public AsyncTask() {
     }
@@ -43,6 +44,11 @@ public abstract class AsyncTask implements Runnable {
         return this;
     }
 
+    public AsyncTask onEnd(final Runnable onEnd) {
+        this.onEnd = onEnd;
+        return this;
+    }
+
     public AsyncTask startSync(AbstractAnimation animation) throws InterruptedException {
         start(animation);
         join();
@@ -61,6 +67,9 @@ public abstract class AsyncTask implements Runnable {
     public final void onStop() {
         synchronized (this) {
             notifyAll();
+        }
+        if (onEnd != null){
+            onEnd.run();
         }
     }
 

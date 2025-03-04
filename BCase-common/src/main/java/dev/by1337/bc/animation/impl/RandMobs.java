@@ -20,6 +20,7 @@ import dev.by1337.virtualentity.api.virtual.VirtualLivingEntity;
 import org.bukkit.Particle;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
+import org.bukkit.event.player.PlayerInteractEvent;
 import org.by1337.blib.geom.Vec3d;
 
 import java.util.ArrayList;
@@ -50,7 +51,7 @@ public class RandMobs extends AbstractAnimation {
     @Override
     @AsyncOnly
     protected void animate() throws InterruptedException {
-        AsyncTask.create(() -> {
+       var lookTask = AsyncTask.create(() -> {
             for (VirtualEntity value : tracker.values()) {
                 if (value instanceof VirtualLivingEntity) {
                     value.lookAt(new Vec3d(player.getLocation()));
@@ -86,7 +87,6 @@ public class RandMobs extends AbstractAnimation {
         world.spawnParticle(Particle.FLAME, clickedEntity.getPos().toLocation(world), 50, 0, 0, 0, 0.5);
         new AsyncTask() {
             final Vec3d pos = clickedEntity.getPos();
-
             @Override
             public void run() {
                 ParticleUtil.spawnBlockOutlining(pos, world, Particle.FLAME, 0.1);
@@ -96,6 +96,7 @@ public class RandMobs extends AbstractAnimation {
         trackEntity(winner.createVirtualItem(clickedEntity.getPos()));
         sleep(config.idle);
         removeEntity(clickedEntity);
+        lookTask.cancel();
         for (VirtualEntity value : tracker.values()) {
             if (value instanceof VirtualLivingEntity livingEntity) {
                 livingEntity.setHealth(0);
@@ -122,6 +123,12 @@ public class RandMobs extends AbstractAnimation {
             clickedEntity = livingEntity;
             update();
         }
+    }
+
+    @Override
+    @SyncOnly
+    public void onInteract(PlayerInteractEvent event) {
+
     }
 
     private static class Config {

@@ -40,12 +40,10 @@ public class RandMobs extends AbstractAnimation {
     }
 
     @Override
-    @AsyncOnly
+    @SyncOnly
     protected void onStart() {
-        sync(() -> {
-            caseBlock.hideBlock();
-            caseBlock.hideHologram();
-        }).start();
+        caseBlock.hideBlock();
+        caseBlock.hideHologram();
     }
 
     @Override

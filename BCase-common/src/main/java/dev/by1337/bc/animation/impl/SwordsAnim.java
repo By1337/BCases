@@ -45,13 +45,10 @@ public class SwordsAnim extends AbstractAnimation {
     }
 
     @Override
-    @AsyncOnly
-    protected void onStart() throws InterruptedException {
-        sync(() -> {
-            caseBlock.hideHologram();
-            //    caseBlock.hideBlock();
-            worldEditor = new WorldEditor(world);
-        }).start().join();
+    @SyncOnly
+    protected void onStart() {
+        caseBlock.hideHologram();
+        worldEditor = new WorldEditor(world);
     }
 
     @Override
@@ -90,6 +87,7 @@ public class SwordsAnim extends AbstractAnimation {
 
         new AsyncTask() {
             final Vec3d pos = selectedStone.toVec3d().add(0.5, 0, 0.5);
+
             @Override
             public void run() {
                 ParticleUtil.spawnBlockOutlining(pos, world, Particle.FLAME, 0.1);
@@ -103,7 +101,7 @@ public class SwordsAnim extends AbstractAnimation {
             worldEditor.setType(pos, Material.AIR);
             var blockCenter = pos.toLocation(world).add(0.5, 0.5, 0.5);
             world.spawnParticle(Particle.BLOCK_CRACK, blockCenter, 30, Material.COBBLESTONE.createBlockData());
-            world.playSound(blockCenter, Sound.BLOCK_STONE_BREAK,1, 1);
+            world.playSound(blockCenter, Sound.BLOCK_STONE_BREAK, 1, 1);
             trackEntity(prizeSelector.getRandomPrize().createVirtualItem(pos.toVec3d().add(0.5, 0.3, 0.5)));
         }
         stoneToSword.values().forEach(this::removeEntity);

@@ -1,14 +1,17 @@
 package dev.by1337.bc.task;
 
+import dev.by1337.bc.util.ThrowingRunnable;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.Plugin;
+import org.jetbrains.annotations.Nullable;
 
 public class SyncTask {
-    private final Runnable runnable;
+    private final ThrowingRunnable runnable;
     private volatile boolean isDone;
     private final Plugin plugin;
+    private @Nullable Throwable throwable;
 
-    public SyncTask(Runnable runnable, Plugin plugin) {
+    public SyncTask(ThrowingRunnable runnable, Plugin plugin) {
         this.runnable = runnable;
         this.plugin = plugin;
     }
@@ -17,6 +20,9 @@ public class SyncTask {
         if (Bukkit.isPrimaryThread()) {
             try {
                 runnable.run();
+            } catch (Throwable e) {
+                throwable = e;
+                plugin.getSLF4JLogger().error("Failed to run task", e);
             } finally {
                 synchronized (SyncTask.this) {
                     isDone = true;
@@ -27,6 +33,9 @@ public class SyncTask {
             Bukkit.getScheduler().runTask(plugin, () -> {
                 try {
                     runnable.run();
+                } catch (Throwable e) {
+                    throwable = e;
+                    plugin.getSLF4JLogger().error("Failed to run task", e);
                 } finally {
                     synchronized (SyncTask.this) {
                         isDone = true;
@@ -47,6 +56,9 @@ public class SyncTask {
         synchronized (this) {
             if (isDone) return;
             wait();
+        }
+        if (throwable != null){
+            throw new RuntimeException(throwable);
         }
     }
 }

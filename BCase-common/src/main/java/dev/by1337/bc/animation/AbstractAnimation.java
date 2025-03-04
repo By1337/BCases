@@ -9,15 +9,14 @@ import dev.by1337.bc.task.SyncTask;
 import dev.by1337.bc.task.Ticker;
 import dev.by1337.bc.tracker.ViewerTracker;
 import dev.by1337.bc.util.AsyncCatcher;
+import dev.by1337.bc.util.ThrowingRunnable;
 import dev.by1337.bc.yaml.CashedYamlContext;
 import dev.by1337.virtualentity.api.virtual.VirtualEntity;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Sound;
 import org.bukkit.World;
-import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
-import org.bukkit.event.player.PlayerInteractEvent;
 import org.by1337.blib.chat.util.Message;
 import org.by1337.blib.geom.Vec3d;
 import org.by1337.blib.geom.Vec3i;
@@ -74,7 +73,7 @@ public abstract class AbstractAnimation implements Animation {
         System.out.println("AbstractAnimation.run");
         if (closed) throw new IllegalStateException("Animation is closed");
         try {
-            onStart();
+            sync(this::onStart).start().join();
             try {
                 animate();
             } catch (InterruptedException ignored) {
@@ -105,8 +104,8 @@ public abstract class AbstractAnimation implements Animation {
         }
     }
 
-    @AsyncOnly
-    protected abstract void onStart() throws InterruptedException;
+    @SyncOnly
+    protected abstract void onStart();
 
     @AsyncOnly
     protected abstract void animate() throws InterruptedException;
@@ -175,7 +174,7 @@ public abstract class AbstractAnimation implements Animation {
         Thread.sleep(ms);
     }
 
-    public SyncTask sync(Runnable runnable) {
+    public SyncTask sync(ThrowingRunnable runnable) {
         System.out.println("AbstractAnimation.sync");
         return new SyncTask(runnable, context.plugin());
     }

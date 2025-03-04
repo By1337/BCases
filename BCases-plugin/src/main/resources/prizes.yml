@@ -1,0 +1,49 @@
+prizes:
+  default:
+    - chance: 100.0
+      enchanted: true
+      material: STONE
+      give_commands:
+        - '[MESSAGE] &r'
+        - '[MESSAGE] &7Обычный кейс'
+        - '[MESSAGE] &fВыигрыш: &7Камень'
+        - '[MESSAGE] &r'
+        - '[CONSOLE] minecraft:give %player_name% stone'
+      display_name: Test
+    - chance: 100.0
+      enchanted: true
+      material: STONE
+      give_commands:
+        - cmd1
+        - cmd2
+      display_name: Test
+    - chance: 100.0
+      enchanted: true
+      material: STONE
+      give_commands:
+        - cmd1
+        - cmd2
+      display_name: Test
+    - chance: 100.0
+      items:
+        - chance: 100.0
+          enchanted: true
+          material: STONE
+          give_commands:
+            - cmd1
+            - cmd2
+          display_name: Test
+        - chance: 100.0
+          enchanted: true
+          material: STONE
+          give_commands:
+            - cmd1
+            - cmd2
+          display_name: Test
+        - chance: 100.0
+          enchanted: true
+          material: STONE
+          give_commands:
+            - cmd1
+            - cmd2
+          display_name: Test

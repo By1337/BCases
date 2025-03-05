@@ -162,6 +162,7 @@ public class SwordsAnim extends AbstractAnimation {
             worldEditor.close();
         }
         caseBlock.showHologram();
+        caseBlock.givePrize(winner, player);
         //    caseBlock.showBlock();
     }
 

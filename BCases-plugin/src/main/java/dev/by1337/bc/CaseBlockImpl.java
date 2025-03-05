@@ -20,7 +20,9 @@ import org.bukkit.block.data.BlockData;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.PluginClassLoader;
+import org.by1337.blib.BLib;
 import org.by1337.blib.chat.placeholder.Placeholder;
+import org.by1337.blib.chat.util.Message;
 import org.by1337.blib.command.CommandException;
 import org.by1337.blib.command.StringReader;
 import org.by1337.blib.configuration.serialization.BukkitCodecs;
@@ -137,9 +139,10 @@ public class CaseBlockImpl extends Placeholder implements CaseBlock, Closeable {
     public void givePrize(Prize prize, Player player) {
         AsyncCatcher.catchOp("BlockCase#givePrize");
         CommandContext context = new CommandContext(this, player);
+        Message message = BLib.getApi().getMessage();
         for (String giveCommand : prize.giveCommands()) {
             try {
-                CommandRegistry.COMMAND.process(context, new StringReader(giveCommand));
+                CommandRegistry.COMMAND.process(context, new StringReader(message.setPlaceholders(player, giveCommand)));
             } catch (Throwable e) {
                 plugin.getSLF4JLogger().error("Failed to run command: {}", giveCommand, e);
             }

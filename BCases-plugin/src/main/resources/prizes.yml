@@ -1,49 +1,59 @@
 prizes:
-  default:
-    - chance: 100.0
-      enchanted: true
-      material: STONE
-      give_commands:
+  default: # Набор призов default
+    # первый приз
+    - chance: 100.0 # "вес" шанс появления
+      enchanted: false # эффект зачарования
+      material: stone # материал
+      give_commands: # команды выдачи
         - '[MESSAGE] &r'
         - '[MESSAGE] &7Обычный кейс'
         - '[MESSAGE] &fВыигрыш: &7Камень'
         - '[MESSAGE] &r'
         - '[CONSOLE] minecraft:give %player_name% stone'
-      display_name: Test
-    - chance: 100.0
-      enchanted: true
-      material: STONE
+      display_name: '&7Камень'
+    #
+    # второй приз
+    - chance: 50
+      enchanted: false
+      material: netherite_scrap
       give_commands:
-        - cmd1
-        - cmd2
-      display_name: Test
-    - chance: 100.0
-      enchanted: true
-      material: STONE
-      give_commands:
-        - cmd1
-        - cmd2
-      display_name: Test
-    - chance: 100.0
+        - '[MESSAGE] &r'
+        - '[MESSAGE] &7Обычный кейс'
+        - '[MESSAGE] &fВыигрыш: &6Незеритовый лом'
+        - '[MESSAGE] &r'
+        - '[CONSOLE] minecraft:give %player_name% netherite_scrap'
+      display_name: '&6Незеритовый лом'
+    #
+    # Это приз со списком возможных призов
+    - chance: 30
       items:
-        - chance: 100.0
-          enchanted: true
-          material: STONE
+        - chance: 75
+          enchanted: false
+          material: diamond_pickaxe
           give_commands:
-            - cmd1
-            - cmd2
-          display_name: Test
-        - chance: 100.0
+            - '[MESSAGE] &r'
+            - '[MESSAGE] &7Обычный кейс'
+            - '[MESSAGE] &fВыигрыш: &bАлмазная кирка'
+            - '[MESSAGE] &r'
+            - '[CONSOLE] minecraft:give %player_name% diamond_pickaxe'
+          display_name: '&bАлмазная кирка'
+        - chance: 20
           enchanted: true
-          material: STONE
+          material: diamond_pickaxe
           give_commands:
-            - cmd1
-            - cmd2
-          display_name: Test
-        - chance: 100.0
+            - '[MESSAGE] &r'
+            - '[MESSAGE] &7Обычный кейс'
+            - '[MESSAGE] &fВыигрыш: &dАлмазная кирка &7[эф5]'
+            - '[MESSAGE] &r'
+            - '[CONSOLE] minecraft:give %player_name% minecraft:diamond_pickaxe{Enchantments:[{id:"minecraft:efficiency",lvl:5}]}'
+          display_name: '&dАлмазная кирка &7[эф5]'
+        - chance: 5
           enchanted: true
-          material: STONE
+          material: diamond_pickaxe
           give_commands:
-            - cmd1
-            - cmd2
-          display_name: Test
+            - '[MESSAGE] &r'
+            - '[MESSAGE] &7Обычный кейс'
+            - '[MESSAGE] &fВыигрыш: &dАлмазная кирка &7[эф10]'
+            - '[MESSAGE] &r'
+            - '[CONSOLE] minecraft:give %player_name% minecraft:diamond_pickaxe{Enchantments:[{id:"minecraft:efficiency",lvl:10}]}'
+          display_name: '&dАлмазная кирка &7[эф10]'

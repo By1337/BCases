@@ -53,7 +53,7 @@ public class CommandRegistry {
                 new Command<CommandContext>("[CONSOLE]")
                         .argument(new ArgumentStrings<>("cmd"))
                         .executor((sender, args) -> {
-                            String msg = (String) args.getOrThrow("msg", "Use: [CONSOLE] <cmd>]");
+                            String msg = (String) args.getOrThrow("cmd", "Use: [CONSOLE] <cmd>");
                             Bukkit.dispatchCommand(Bukkit.getConsoleSender(), msg);
                         })
         )

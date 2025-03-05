@@ -12,6 +12,6 @@ blocks:
         y: 1.5
         z: 0.5
       lines:
-        - '&e⚝ &e&lКейсы &e⚝'
-        - '&eНажми&f,чтобы открыть'
+        - '&dКейсы'
+        - '&fНажми, чтобы открыть'
         - '&bКлючей: %bcases_keys_count_of_type_default%'

@@ -12,6 +12,7 @@ public class AnimationRegistry extends SpacedNameRegistry<AnimationRegistry.Anim
     public static final AnimationRegistry INSTANCE = new AnimationRegistry();
     public static AnimationCreator RAND_MOBS = INSTANCE.register("default:rand_mobs", RandMobs::new);
     public static AnimationCreator SWORDS = INSTANCE.register("default:swords", SwordsAnim::new);
+    public static AnimationCreator CREEPERS = INSTANCE.register("default:creepers", CreepersAnim::new);
 
     private AnimationRegistry() {
     }

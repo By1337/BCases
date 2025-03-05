@@ -12,28 +12,30 @@ import dev.by1337.bc.prize.Prize;
 import dev.by1337.bc.prize.PrizeSelector;
 import dev.by1337.bc.task.AsyncTask;
 import dev.by1337.bc.yaml.CashedYamlContext;
-import dev.by1337.virtualentity.api.VirtualEntityApi;
 import dev.by1337.virtualentity.api.entity.EntityEvent;
-import dev.by1337.virtualentity.api.entity.VirtualEntityType;
 import dev.by1337.virtualentity.api.virtual.VirtualEntity;
 import dev.by1337.virtualentity.api.virtual.VirtualLivingEntity;
+import dev.by1337.virtualentity.api.virtual.item.VirtualItem;
+import dev.by1337.virtualentity.api.virtual.monster.VirtualCreeper;
+import org.bukkit.Material;
 import org.bukkit.Particle;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.inventory.ItemStack;
 import org.by1337.blib.geom.Vec3d;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class RandMobs extends AbstractAnimation {
+public class CreepersAnim extends AbstractAnimation {
 
     private final Config config;
     private volatile boolean waitClick;
-    private volatile VirtualLivingEntity clickedEntity;
+    private volatile VirtualCreeper clickedEntity;
     private final Prize winner;
 
-    public RandMobs(CaseBlock caseBlock, AnimationContext context, Runnable onEndCallback, PrizeSelector prizeSelector, CashedYamlContext config, Player player) {
+    public CreepersAnim(CaseBlock caseBlock, AnimationContext context, Runnable onEndCallback, PrizeSelector prizeSelector, CashedYamlContext config, Player player) {
         super(caseBlock, context, onEndCallback, prizeSelector, config, player);
         this.config = config.get("settings", v -> v.decode(Config.CODEC).getOrThrow().getFirst(), new Config());
         winner = prizeSelector.getRandomPrize();
@@ -49,41 +51,60 @@ public class RandMobs extends AbstractAnimation {
     @Override
     @AsyncOnly
     protected void animate() throws InterruptedException {
-       var lookTask = AsyncTask.create(() -> {
-           tracker.forEach(value -> {
-               if (value instanceof VirtualLivingEntity) {
-                   value.lookAt(new Vec3d(player.getLocation()));
-               }
-           });
+        var lookTask = AsyncTask.create(() -> {
+            tracker.forEach(value -> {
+                if (value instanceof VirtualLivingEntity) {
+                    value.lookAt(new Vec3d(player.getLocation()));
+                }
+            });
         }).timer().delay(1).start(this);
         for (Vec3d position : config.positions) {
-            VirtualEntity entity = VirtualEntityApi.getFactory().create(config.mobs.get(RANDOM.nextInt(config.mobs.size())));
-            if (!(entity instanceof VirtualLivingEntity)) {
-                logger.error("Failed to create non living entity {}", entity.getType());
-                continue;
-            }
-            entity.setPos(center.add(position));
-            trackEntity(entity);
+            Vec3d pos = center.add(position);
+            VirtualCreeper creeper = VirtualCreeper.create();
+            creeper.setPos(pos);
+            trackEntity(creeper);
             playSound(Sound.BLOCK_GILDED_BLACKSTONE_FALL, 1, 1);
+            world.spawnParticle(Particle.CLOUD, pos.add(0, 0.3, 0).toLocation(world), 15, 0, 0, 0, 0.05);
             sleep(config.spawnDelay);
-        }
-        if (tracker.isEmpty()) {
-            logger.error("No living entities found");
-            forceStop();
-            return;
         }
         sendTitle("", config.title, 5, 30, 10);
         waitClick = true;
         waitUpdate(config.clickWait);
         waitClick = false;
         if (clickedEntity == null) {
-            clickedEntity = (VirtualLivingEntity) tracker.getRandom();
+            clickedEntity = (VirtualCreeper) tracker.getRandom();
         }
-        clickedEntity.setHealth(0);
-        clickedEntity.broadcastEntityEvent(EntityEvent.DEATH);
+
+        clickedEntity.setIgnited(true);
+        clickedEntity.setPowered(true);
+        clickedEntity.broadcastEntityEvent(EntityEvent.HURT);
+        playSound(Sound.ENTITY_CREEPER_PRIMED, 1, 1);
+        sleepTicks(30);
+        tracker.removeEntity(clickedEntity);
+
+        world.playSound(clickedEntity.getPos().toLocation(world), Sound.ENTITY_GENERIC_EXPLODE, 0.5f, 0.5f);
+        world.spawnParticle(Particle.EXPLOSION_HUGE, clickedEntity.getPos().toLocation(world), 0);
+        world.spawnParticle(Particle.CLOUD, clickedEntity.getPos().toLocation(world), 30, 0, 0, 0, 0.05);
+
+        for (int i = 0; i < 35; i++) {
+            Vec3d motion = new Vec3d(
+                    RANDOM.nextDouble() - 0.5,
+                    RANDOM.nextDouble() + 0.2,
+                    RANDOM.nextDouble() - 0.5
+            );
+            tracker.addEntity(
+                    createVirtualItem(
+                            new ItemStack(Material.GUNPOWDER),
+                            clickedEntity.getPos().add(0, 1, 0),
+                            motion
+                    )
+            );
+        }
+
         world.spawnParticle(Particle.FLAME, clickedEntity.getPos().toLocation(world), 50, 0, 0, 0, 0.5);
         new AsyncTask() {
             final Vec3d pos = clickedEntity.getPos();
+
             @Override
             public void run() {
                 ParticleUtil.spawnBlockOutlining(pos, world, Particle.FLAME, 0.1);
@@ -91,8 +112,10 @@ public class RandMobs extends AbstractAnimation {
         }.timer().delay(6).start(this);
 
         trackEntity(winner.createVirtualItem(clickedEntity.getPos()));
+
+        sleepTicks(3 * 20);
+
         sleep(config.idle);
-        removeEntity(clickedEntity);
         lookTask.cancel();
         tracker.forEach(value -> {
             if (value instanceof VirtualLivingEntity livingEntity) {
@@ -102,6 +125,14 @@ public class RandMobs extends AbstractAnimation {
             }
         });
         sleep(config.beforeEnd);
+    }
+
+    private VirtualItem createVirtualItem(ItemStack display, Vec3d pos, Vec3d motion) {
+        VirtualItem item = VirtualItem.create();
+        item.setPos(pos);
+        item.setItem(display);
+        item.setMotion(motion);
+        return item;
     }
 
     @Override
@@ -116,7 +147,7 @@ public class RandMobs extends AbstractAnimation {
     @SyncOnly
     protected void onClick(VirtualEntity entity, Player clicker) {
         if (!clicker.equals(player)) return;
-        if (waitClick && entity instanceof VirtualLivingEntity livingEntity) {
+        if (waitClick && entity instanceof VirtualCreeper livingEntity) {
             clickedEntity = livingEntity;
             update();
         }
@@ -131,7 +162,6 @@ public class RandMobs extends AbstractAnimation {
     private static class Config {
         public static final Codec<Config> CODEC = RecordCodecBuilder.create(instance -> instance.group(
                 Vec3d.CODEC.listOf().fieldOf("mobs_positions").forGetter(v -> v.positions),
-                VirtualEntityType.CODEC.listOf().fieldOf("mobs").forGetter(v -> v.mobs),
                 Codec.LONG.fieldOf("spawn_delay").forGetter(v -> v.spawnDelay),
                 Codec.LONG.fieldOf("click_wait").forGetter(v -> v.clickWait),
                 Codec.LONG.fieldOf("idle").forGetter(v -> v.idle),
@@ -139,16 +169,14 @@ public class RandMobs extends AbstractAnimation {
                 Codec.STRING.fieldOf("title").forGetter(v -> v.title)
         ).apply(instance, Config::new));
         private final List<Vec3d> positions;
-        private final List<VirtualEntityType> mobs;
         private final long spawnDelay;
         private final long clickWait;
         private final long idle;
         private final long beforeEnd;
         private final String title;
 
-        public Config(List<Vec3d> positions, List<VirtualEntityType> mobs, long spawnDelay, long clickWait, long idle, long beforeEnd, String title) {
+        public Config(List<Vec3d> positions, long spawnDelay, long clickWait, long idle, long beforeEnd, String title) {
             this.positions = positions;
-            this.mobs = mobs;
             this.spawnDelay = spawnDelay;
             this.clickWait = clickWait;
             this.idle = idle;
@@ -166,10 +194,6 @@ public class RandMobs extends AbstractAnimation {
             positions.add(new Vec3d(1, 0.0, -2));
             positions.add(new Vec3d(3, 0.0, -0));
             positions.add(new Vec3d(3, 0.0, 1));
-            mobs = new ArrayList<>();
-            mobs.add(VirtualEntityType.ZOMBIE);
-            mobs.add(VirtualEntityType.DROWNED);
-            mobs.add(VirtualEntityType.ZOMBIE_VILLAGER);
             spawnDelay = 150;
             clickWait = 10_000;
             idle = 3_000;

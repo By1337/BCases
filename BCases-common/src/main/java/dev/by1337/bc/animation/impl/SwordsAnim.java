@@ -1,5 +1,7 @@
 package dev.by1337.bc.animation.impl;
 
+import blib.com.mojang.serialization.Codec;
+import blib.com.mojang.serialization.codecs.RecordCodecBuilder;
 import dev.by1337.bc.CaseBlock;
 import dev.by1337.bc.animation.AbstractAnimation;
 import dev.by1337.bc.animation.AnimationContext;
@@ -25,23 +27,22 @@ import org.bukkit.inventory.ItemStack;
 import org.by1337.blib.geom.Vec3d;
 import org.by1337.blib.geom.Vec3f;
 import org.by1337.blib.geom.Vec3i;
-import org.by1337.blib.util.Direction;
 
 import java.util.*;
 
 public class SwordsAnim extends AbstractAnimation {
-    private static final List<Vec3i> SPAWN_POINTS;
-
     private final Prize winner;
     private final Set<Vec3i> stones = new HashSet<>();
     private final Map<Vec3i, VirtualArmorStand> stoneToSword = new HashMap<>();
     private volatile Vec3i selectedStone;
     private WorldEditor worldEditor;
     private volatile boolean waitClick;
+    private final Config config;
 
     public SwordsAnim(CaseBlock caseBlock, AnimationContext context, Runnable onEndCallback, PrizeSelector prizeSelector, CashedYamlContext config, Player player) {
         super(caseBlock, context, onEndCallback, prizeSelector, config, player);
         winner = prizeSelector.getRandomPrize();
+        this.config = config.get("settings", v -> v.decode(Config.CODEC).getOrThrow().getFirst());
     }
 
     @Override
@@ -54,19 +55,19 @@ public class SwordsAnim extends AbstractAnimation {
     @Override
     @AsyncOnly
     protected void animate() throws InterruptedException {
-        for (Vec3i spawnPoint : SPAWN_POINTS) {
+        for (Vec3i spawnPoint : config.blockPositions) {
             var pos = blockPos.add(spawnPoint);
             worldEditor.setType(pos, Material.ANDESITE);
             stones.add(pos);
             world.playSound(location, Sound.BLOCK_STONE_PLACE, 1, 1);
             sleepTicks(3);
         }
-        for (Vec3i dest : SPAWN_POINTS) {
+        for (Vec3i dest : config.blockPositions) {
             spawnSword(blockPos.add(dest));
             sleepTicks(4);
         }
         sleepTicks(30);
-        sendTitle("", "&cВыбери камень!", 5, 30, 10);
+        sendTitle("", config.title, 5, 30, 10);
         waitClick = true;
         waitUpdate(10_000);
         if (selectedStone == null) {
@@ -95,7 +96,7 @@ public class SwordsAnim extends AbstractAnimation {
         }.timer().delay(6).start(this);
 
         sleepTicks(40);
-        for (Vec3i spawnPoint : SPAWN_POINTS) {
+        for (Vec3i spawnPoint : config.blockPositions) {
             Vec3i pos = blockPos.add(spawnPoint);
             if (pos.equals(selectedStone)) continue;
             worldEditor.setType(pos, Material.AIR);
@@ -163,7 +164,6 @@ public class SwordsAnim extends AbstractAnimation {
         }
         caseBlock.showHologram();
         caseBlock.givePrize(winner, player);
-        //    caseBlock.showBlock();
     }
 
     @Override
@@ -185,34 +185,17 @@ public class SwordsAnim extends AbstractAnimation {
         update();
     }
 
-    static {
-        SPAWN_POINTS = new ArrayList<>();
-        var directions = List.of(
-                Direction.SOUTH,
-                Direction.WEST,
-                Direction.NORTH,
-                Direction.EAST
-        );
-        for (Direction direction : directions) {
-            Vec3i pos = new Vec3i(direction.getDirection().x, 0, direction.getDirection().z).mul(3);
-            for (int i = 0; i < 2; i++) {
-                Vec3i offsets;
-                if (direction == Direction.NORTH || Direction.SOUTH == direction) {
-                    if (direction.getAxis() == Direction.Axis.POSITIVE_Z) {
-                        offsets = new Vec3i(i == 0 ? 1 : -1, 0, 0);
-                    } else {
-                        offsets = new Vec3i(i == 0 ? -1 : 1, 0, 0);
-                    }
+    private static class Config {
+        public static final Codec<Config> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+                Vec3i.CODEC.listOf().fieldOf("block_positions").forGetter(v -> v.blockPositions),
+                Codec.STRING.fieldOf("title").forGetter(v -> v.title)
+        ).apply(instance, Config::new));
+        private final List<Vec3i> blockPositions;
+        private final String title;
 
-                } else {
-                    if (direction.getAxis() == Direction.Axis.NEGATIVE_X) {
-                        offsets = new Vec3i(0, 0, i == 0 ? 1 : -1);
-                    } else {
-                        offsets = new Vec3i(0, 0, i == 0 ? -1 : 1);
-                    }
-                }
-                SPAWN_POINTS.add(pos.add(offsets));
-            }
+        public Config(List<Vec3i> blockPositions, String title) {
+            this.blockPositions = blockPositions;
+            this.title = title;
         }
     }
 }

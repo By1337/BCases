@@ -6,6 +6,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 
 public class PrizeMap {
     public static final Codec<PrizeMap> CODEC = RecordCodecBuilder.create(instance -> instance.group(
@@ -21,6 +22,9 @@ public class PrizeMap {
 
     public boolean hasPrizeSet(String name) {
         return prizes.containsKey(name);
+    }
+    public Set<String> keys(){
+        return prizes.keySet();
     }
 
     public Map<String, PrizeSelector> prizes() {

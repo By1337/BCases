@@ -1,7 +1,6 @@
 provider: default:creepers
 id: creepers
 
-
 settings:
   title: '&cУдарь крипера!'
   spawn_delay: 150

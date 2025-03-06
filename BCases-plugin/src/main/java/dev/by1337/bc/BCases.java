@@ -5,6 +5,7 @@ import dev.by1337.bc.animation.AnimationContextImpl;
 import dev.by1337.bc.animation.AnimationLoader;
 import dev.by1337.bc.bd.CaseKey;
 import dev.by1337.bc.bd.Database;
+import dev.by1337.bc.bd.User;
 import dev.by1337.bc.db.MemoryDatabase;
 import dev.by1337.bc.hook.papi.PapiHook;
 import dev.by1337.bc.menu.CaseDefaultMenu;
@@ -29,6 +30,7 @@ import org.by1337.bmenu.MenuLoader;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.function.BiConsumer;
 
@@ -115,12 +117,12 @@ public class BCases extends JavaPlugin {
                                 new ArgumentPlayer<>("player"),
                                 new ArgumentString<>("player")
                         ))
-                        .argument(new ArgumentString<>("id", List.of("default")))
+                        .argument(new ArgumentString<>("id", new ArrayList<>(prizeMap.keys())))
                         .argument(new ArgumentInteger<>("count", List.of("1", "10", "25", "50")))
                         .argument(new ArgumentString<>("duration", List.of("7d", "14d", "31d")))
                         .executor(((sender, args) -> {
-                            Object player = args.getOrThrow("player", "Use: /bc give <player> <key id> <?count> <?duration>");
-                            String keyId = (String) args.getOrThrow("id", "Use: /bc give <player> <key id> <?count> <?duration>");
+                            Object player = args.getOrThrow("player", "Use: /bcases give <player> <key id> <?count> <?duration>");
+                            String keyId = (String) args.getOrThrow("id", "Use: /bcases give <player> <key id> <?count> <?duration>");
                             int count = (int) args.getOrDefault("count", 1);
                             long duration = TimeParser.parse((String) args.getOrDefault("duration", "10y"));
 
@@ -133,8 +135,43 @@ public class BCases extends JavaPlugin {
                                 }
                             }
                             if (sender instanceof Player) {
-                                message.sendMsg(sender, "&aУспешно выдал игроку {} {} ключей от кейса {}", player, count, keyId);
+                                if (player instanceof Player pl) {
+                                    message.sendMsg(sender, "&a[✔] &fУспешно выдал игроку {} {} ключей от кейса {}", pl.getName(), count, keyId);
+                                } else {
+                                    message.sendMsg(sender, "&a[✔] &fУспешно выдал &cофлайн&f игроку {} {} ключей от кейса {}", player, count, keyId);
+                                }
+
                             }
+                        }))
+                )
+                .addSubCommand(new Command<CommandSender>("take")
+                        .argument(new MultiArgument<>("player",
+                                new ArgumentPlayer<>("player"),
+                                new ArgumentString<>("player")
+                        ))
+                        .argument(new ArgumentString<>("id", new ArrayList<>(prizeMap.keys())))
+                        .argument(new ArgumentInteger<>("count", List.of("1", "10", "25", "50")))
+                        .executor(((sender, args) -> {
+                            Object player = args.getOrThrow("player", "Use: /bcases take <player> <key id> <?count> <?duration>");
+                            String keyId = (String) args.getOrThrow("id", "Use: /bcases take <player> <key id> <?count> <?duration>");
+                            int count = (int) args.getOrDefault("count", 1);
+
+
+                            if (player instanceof Player pl) {
+                                User user = database.getUser(pl);
+                                List<CaseKey> keys = new ArrayList<>(user.getKeysOfType(keyId));
+
+                                int removed = Math.min(count, keys.size());
+                                for (int i = 0; i < removed; i++) {
+                                    user.removeKey(keys.get(i));
+                                }
+                                if (sender instanceof Player) {
+                                    message.sendMsg(sender, "&a[✔] &fУспешно удалил ключи {} в количестве {} у игрока {}", keyId, removed, pl.getName());
+                                }
+                            } else {
+                                message.sendMsg(sender, "&c[❌] &fНевозможно удалить ключи у оффлайн игрока!");
+                            }
+
                         }))
                 )
                 ;

@@ -13,6 +13,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 
 public class MemoryDatabase implements Database {
     private final Map<UUID, User> users = new HashMap<>();
@@ -27,6 +28,15 @@ public class MemoryDatabase implements Database {
     @Override
     public User getUser(@NotNull UUID uuid) {
         return getUser(Objects.requireNonNull(Bukkit.getPlayer(uuid), "Player is offline"));
+    }
+
+    @Override
+    public CompletableFuture<User> loadUser(@Nullable String name, @Nullable UUID uuid) {
+        if (name == null && uuid == null) {
+            throw new NullPointerException("name and uuid cannot be null");
+        }
+
+        return CompletableFuture.completedFuture(new User(name, uuid, this, new HashMap<>()));
     }
 
     @Override

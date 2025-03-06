@@ -68,7 +68,6 @@ public class Ticker {
     }
 
     public void stop() {
-        System.out.println("Ticker.stop");
         stopped = true;
     }
 }

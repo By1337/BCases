@@ -17,6 +17,8 @@ public interface Database extends Closeable {
     // offline player -> fail
     User getUser(@NotNull UUID player);
 
+    @Contract("null, null -> fail")
+    CompletableFuture<User> loadUser(@Nullable String name, @Nullable UUID uuid);
 
     @Contract("_,null, null -> fail")
     void remKeyFromDb(CaseKey key, @Nullable String name, @Nullable UUID uuid);

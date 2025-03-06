@@ -101,7 +101,7 @@ public class ViewerTracker {
     public void removeAll() {
         lock.lock();
         try {
-            entities.values().forEach(e -> e.tick(Collections.emptySet()));
+            entities.values().forEach(e -> e.tick(Set.of()));
             entities.clear();
         } finally {
             lock.unlock();

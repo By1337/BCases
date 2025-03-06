@@ -88,9 +88,9 @@ public class CreepersAnim extends AbstractAnimation {
 
         for (int i = 0; i < 35; i++) {
             Vec3d motion = new Vec3d(
-                    RANDOM.nextDouble() - 0.5,
-                    RANDOM.nextDouble() + 0.2,
-                    RANDOM.nextDouble() - 0.5
+                    (RANDOM.nextDouble() - 0.5) * 0.6,
+                    (RANDOM.nextDouble() + 0.15) * 0.8,
+                    (RANDOM.nextDouble() - 0.5) * 0.6
             );
             tracker.addEntity(
                     createVirtualItem(

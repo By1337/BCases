@@ -1,6 +1,7 @@
 package dev.by1337.bc;
 
 import com.destroystokyo.paper.event.player.PlayerUseUnknownEntityEvent;
+import org.bukkit.Location;
 import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -10,6 +11,9 @@ import org.bukkit.event.world.WorldLoadEvent;
 import org.bukkit.event.world.WorldUnloadEvent;
 import org.bukkit.persistence.PersistentDataType;
 import org.by1337.blib.block.custom.registry.WorldRegistry;
+import org.by1337.blib.configuration.YamlConfig;
+import org.by1337.blib.configuration.YamlOps;
+import org.by1337.blib.configuration.YamlValue;
 import org.by1337.blib.util.ResourceUtil;
 import org.jetbrains.annotations.Nullable;
 
@@ -22,11 +26,13 @@ public class BlockManager implements Listener, Closeable {
     private final BCases plugin;
     private final List<CaseBlockImpl> blockList = new ArrayList<>();
     private final NamespacedKey cooldownKey;
+    private final YamlConfig config;
 
     public BlockManager(BCases plugin) {
         this.plugin = plugin;
         cooldownKey = new NamespacedKey(plugin, "cooldown");
-        var list = ResourceUtil.load("blocks.yml", plugin).get("blocks").decode(CaseBlockImpl.CODEC.listOf()).getOrThrow().getFirst();
+        config = ResourceUtil.load("blocks.yml", plugin);
+        var list = config.get("blocks").decode(CaseBlockImpl.CODEC.listOf()).getOrThrow().getFirst();
         blockList.addAll(list);
         for (CaseBlockImpl caseBlock : blockList) {
             var pos = caseBlock.pos();
@@ -36,6 +42,17 @@ public class BlockManager implements Listener, Closeable {
             }
         }
         plugin.getServer().getPluginManager().registerEvents(this, plugin);
+    }
+
+    public void saveConfig() {
+        YamlValue serialized = CaseBlockImpl.CODEC.listOf().encodeStart(YamlOps.INSTANCE, blockList).getOrThrow();
+        config.set("blocks", serialized);
+        config.trySave();
+    }
+
+    @Nullable
+    public CaseBlockImpl getBlock(Location loc) {
+        return blocks.get(loc);
     }
 
     public void addBlock(CaseBlockImpl caseBlock) {
@@ -63,7 +80,7 @@ public class BlockManager implements Listener, Closeable {
     }
 
     @EventHandler
-    public void onUseUnknownEntity(PlayerUseUnknownEntityEvent event){
+    public void onUseUnknownEntity(PlayerUseUnknownEntityEvent event) {
         int entityId = event.getEntityId();
         Player player = event.getPlayer();
         for (CaseBlockImpl caseBlock : blockList) {

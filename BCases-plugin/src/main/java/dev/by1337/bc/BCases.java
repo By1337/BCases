@@ -1,5 +1,6 @@
 package dev.by1337.bc;
 
+import blib.com.mojang.serialization.RecordBuilder;
 import dev.by1337.bc.animation.AnimationContext;
 import dev.by1337.bc.animation.AnimationContextImpl;
 import dev.by1337.bc.animation.AnimationLoader;
@@ -7,21 +8,25 @@ import dev.by1337.bc.bd.CaseKey;
 import dev.by1337.bc.bd.Database;
 import dev.by1337.bc.bd.User;
 import dev.by1337.bc.db.MemoryDatabase;
+import dev.by1337.bc.hologram.HologramManager;
 import dev.by1337.bc.hook.papi.PapiHook;
 import dev.by1337.bc.menu.CaseDefaultMenu;
 import dev.by1337.bc.prize.PrizeMap;
+import dev.by1337.bc.util.LookingAtCaseBlockUtil;
 import dev.by1337.bc.util.TimeParser;
+import dev.by1337.bc.world.WorldGetter;
+import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.by1337.blib.chat.util.Message;
 import org.by1337.blib.command.Command;
+import org.by1337.blib.command.CommandException;
 import org.by1337.blib.command.CommandWrapper;
-import org.by1337.blib.command.argument.ArgumentInteger;
-import org.by1337.blib.command.argument.ArgumentPlayer;
-import org.by1337.blib.command.argument.ArgumentString;
-import org.by1337.blib.command.argument.MultiArgument;
+import org.by1337.blib.command.argument.*;
 import org.by1337.blib.command.requires.RequiresPermission;
+import org.by1337.blib.geom.Vec3d;
+import org.by1337.blib.geom.Vec3i;
 import org.by1337.blib.util.ResourceUtil;
 import org.by1337.blib.util.SpacedNameKey;
 import org.by1337.blib.util.invoke.LambdaMetafactoryUtil;
@@ -45,6 +50,7 @@ public class BCases extends JavaPlugin {
     private CommandWrapper commandWrapper;
     private Message message;
     private MenuLoader menuLoader;
+    private LookingAtCaseBlockUtil lookingAtCaseUtil;
 
     @Override
     public void onLoad() {
@@ -70,6 +76,7 @@ public class BCases extends JavaPlugin {
 
         prizeMap = ResourceUtil.load("prizes.yml", this).get().decode(PrizeMap.CODEC).getOrThrow().getFirst();
         blockManager = new BlockManager(this);
+        lookingAtCaseUtil = new LookingAtCaseBlockUtil(blockManager);
 
         animationContext = new AnimationContextImpl(this);
 
@@ -172,6 +179,39 @@ public class BCases extends JavaPlugin {
                                 message.sendMsg(sender, "&c[❌] &fНевозможно удалить ключи у оффлайн игрока!");
                             }
 
+                        }))
+                )
+                .addSubCommand(new Command<CommandSender>("remove")
+                        .requires(sender -> sender instanceof Player)
+                        .requires(sender -> lookingAtCaseUtil.getLookingAtCaseBlock((Player) sender) != null)
+                        .executor(((sender, args) -> {
+                            CaseBlockImpl block = lookingAtCaseUtil.getLookingAtCaseBlock((Player) sender);
+                            if (block == null) throw new CommandException("Block not found!");
+                            blockManager.removeBlock(block);
+                            blockManager.saveConfig();
+                            message.sendMsg(sender, "&a[✔] &fУспешно удалил блок на координатах {} {} {}", block.pos().x, block.pos().y, block.pos().z);
+                        }))
+                )
+                .addSubCommand(new Command<CommandSender>("set")
+                        .requires(sender -> sender instanceof Player)
+                        .argument(new ArgumentLookingAtBlock<>("pos"))
+                        .executor(((sender, args) -> {
+                            Player player = (Player) sender;
+
+                            Vec3i pos = (Vec3i) args.getOrThrow("pos", "Use: /bcases <x> <y> <z>");
+                            CaseBlockImpl caseBlock = new CaseBlockImpl(
+                                    Material.END_PORTAL_FRAME.createBlockData(),
+                                    new WorldGetter(player.getWorld().getName()),
+                                    pos,
+                                    menuLoader.getMenus().iterator().next().toString(),
+                                    new HologramManager.Config(
+                                            new Vec3d(0.5, 1.5, 0.5),
+                                            List.of("&dКейсы", "&fНажми, чтобы открыть", "&bКлючей: %bcases_keys_count_of_type_default%")
+                                    )
+                            );
+                            blockManager.addBlock(caseBlock);
+                            blockManager.saveConfig();
+                            message.sendMsg(sender, "&a[✔] &fУспешно установил кейс");
                         }))
                 )
                 ;

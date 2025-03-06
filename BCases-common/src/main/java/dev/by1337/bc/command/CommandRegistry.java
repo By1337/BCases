@@ -15,6 +15,7 @@ public class CommandRegistry {
     static {
         COMMAND.addSubCommand(
                 new Command<CommandContext>("[TAKE_KEY]")
+                        .aliases("[take_key]")
                         .argument(new ArgumentString<>("key"))
                         .executor((sender, args) -> {
                             String key = (String) args.getOrThrow("key", "Use: [TAKE_KEY] <key>");
@@ -27,6 +28,7 @@ public class CommandRegistry {
                         })
         ).addSubCommand(
                 new Command<CommandContext>("[PLAY]")
+                        .aliases("[play]")
                         .argument(new ArgumentString<>("prizes"))
                         .argument(new ArgumentString<>("animation"))
                         .executor((sender, args) -> {
@@ -37,6 +39,7 @@ public class CommandRegistry {
                         })
         ).addSubCommand(
                 new Command<CommandContext>("[MESSAGE]")
+                        .aliases("[message]")
                         .argument(new ArgumentStrings<>("msg"))
                         .executor((sender, args) -> {
                             String msg = (String) args.getOrDefault("msg", "");
@@ -44,6 +47,7 @@ public class CommandRegistry {
                         })
         ).addSubCommand(
                 new Command<CommandContext>("[BROADCAST]")
+                        .aliases("[broadcast]")
                         .argument(new ArgumentStrings<>("msg"))
                         .executor((sender, args) -> {
                             String msg = (String) args.getOrDefault("msg", "");
@@ -51,6 +55,7 @@ public class CommandRegistry {
                         })
         ).addSubCommand(
                 new Command<CommandContext>("[CONSOLE]")
+                        .aliases("[console]")
                         .argument(new ArgumentStrings<>("cmd"))
                         .executor((sender, args) -> {
                             String msg = (String) args.getOrThrow("cmd", "Use: [CONSOLE] <cmd>");

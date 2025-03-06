@@ -1,6 +1,6 @@
 package dev.by1337.bc;
 
-import blib.com.mojang.serialization.RecordBuilder;
+import dev.by1337.bc.addon.AddonLoader;
 import dev.by1337.bc.animation.AnimationContext;
 import dev.by1337.bc.animation.AnimationContextImpl;
 import dev.by1337.bc.animation.AnimationLoader;
@@ -51,6 +51,7 @@ public class BCases extends JavaPlugin {
     private Message message;
     private MenuLoader menuLoader;
     private LookingAtCaseBlockUtil lookingAtCaseUtil;
+    private AddonLoader addonLoader;
 
     @Override
     public void onLoad() {
@@ -84,7 +85,9 @@ public class BCases extends JavaPlugin {
         commandWrapper.setPermission("bcases.admin");
         commandWrapper.register();
 
-        //todo register custom animations
+        addonLoader = new AddonLoader(this, new File(getDataFolder(), "addons"));
+        addonLoader.findAddons();
+        addonLoader.enableAll();
 
         menuLoader.loadMenus();
         menuLoader.registerListeners();
@@ -106,12 +109,18 @@ public class BCases extends JavaPlugin {
 
     private void onDisable0() {
         blockManager.close();
+        addonLoader.disableAll();
         papiHook.unregister();
         commandWrapper.close();
         try {
             database.close();
         } catch (IOException e) {
             getSLF4JLogger().error("Failed to close database", e);
+        }
+        try {
+            addonLoader.close();
+        } catch (IOException e) {
+            getSLF4JLogger().error("Failed to close addons loader", e);
         }
     }
 

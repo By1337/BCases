@@ -1,11 +1,11 @@
 package dev.by1337.bc.tracker;
 
+import dev.by1337.virtualentity.api.util.PlayerHashSet;
 import dev.by1337.virtualentity.api.virtual.VirtualEntity;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.by1337.blib.geom.Vec3d;
-import org.by1337.blib.util.collection.IdentityHashSet;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Collections;
@@ -24,6 +24,7 @@ public class ViewerTracker {
     private final int radiusSq;
     private final Map<Integer, VirtualEntity> entities = new ConcurrentHashMap<>();
     private final Lock lock = new ReentrantLock();
+    private PlayerHashSet players = new PlayerHashSet();
 
     public ViewerTracker(World world, Vec3d center, int radius) {
         this.world = world;
@@ -32,19 +33,25 @@ public class ViewerTracker {
     }
 
     public void tick() {
-        Set<Player> actualViewers = new IdentityHashSet<>();
+        Set<Player> actualViewers = new PlayerHashSet();
         for (Player player : world.getPlayers()) {
             Location loc = player.getLocation();
             if (center.distanceSquared(new Vec3d(loc.getX(), loc.getY(), loc.getZ())) <= radiusSq) {
                 actualViewers.add(player);
             }
         }
+        players = new PlayerHashSet();
+        players.addAll(actualViewers);
         lock.lock();
         try {
             entities.values().forEach(e -> e.tick(actualViewers));
         } finally {
             lock.unlock();
         }
+    }
+
+    public Set<Player> getViewers() {
+        return players;
     }
 
     public int size() {

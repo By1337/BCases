@@ -5,7 +5,7 @@ settings:
   title: '&cУдарь крипера!'
   spawn_delay: 150
   click_wait: 10000
-  idle: 3000
+  idle: 6000
   before_end: 4000
   mobs_positions:
     - x: 1

@@ -59,7 +59,7 @@ public class SwordsAnim extends AbstractAnimation {
             var pos = blockPos.add(spawnPoint);
             worldEditor.setType(pos, Material.ANDESITE);
             stones.add(pos);
-            world.playSound(location, Sound.BLOCK_STONE_PLACE, 1, 1);
+            playSound(location, Sound.BLOCK_STONE_PLACE, 1, 1);
             sleepTicks(3);
         }
         for (Vec3i dest : config.blockPositions) {
@@ -74,24 +74,24 @@ public class SwordsAnim extends AbstractAnimation {
             selectedStone = stones.iterator().next();
         }
         var sword = stoneToSword.get(selectedStone);
-        world.playSound(selectedStone.toLocation(world), Sound.BLOCK_ANVIL_DESTROY, 0.8F, 0.8F);
-        var loc = selectedStone.toLocation(world).add(0.5, 1.1, 0.5);
+        playSound(selectedStone, Sound.BLOCK_ANVIL_DESTROY, 0.8F, 0.8F);
+        var loc = selectedStone.toVec3d().add(0.5, 1.1, 0.5);
         for (int i = 0; i < 2; i++) {
             sword.setPos(sword.getPos().add(0, -0.1, 0));
-            world.spawnParticle(Particle.BLOCK_CRACK, loc, 15, Material.COBBLESTONE.createBlockData());
+            spawnParticle(Particle.BLOCK_CRACK, loc, 15, Material.COBBLESTONE.createBlockData());
             sleepTicks(10);
         }
         worldEditor.setType(selectedStone, Material.AIR);
         trackEntity(winner.createVirtualItem(selectedStone.toVec3d().add(0.5, 0.3, 0.5)));
         removeEntity(sword);
-        world.spawnParticle(Particle.BLOCK_CRACK, selectedStone.x + 0.5, selectedStone.y + 0.5, selectedStone.z + 0.5, 60, Material.CRACKED_STONE_BRICKS.createBlockData());
+        spawnParticle(Particle.BLOCK_CRACK, selectedStone.x + 0.5, selectedStone.y + 0.5, selectedStone.z + 0.5, 60, Material.CRACKED_STONE_BRICKS.createBlockData());
 
         new AsyncTask() {
             final Vec3d pos = selectedStone.toVec3d().add(0.5, 0, 0.5);
 
             @Override
             public void run() {
-                ParticleUtil.spawnBlockOutlining(pos, world, Particle.FLAME, 0.1);
+                ParticleUtil.spawnBlockOutlining(pos, SwordsAnim.this, Particle.FLAME, 0.1);
             }
         }.timer().delay(6).start(this);
 
@@ -100,9 +100,9 @@ public class SwordsAnim extends AbstractAnimation {
             Vec3i pos = blockPos.add(spawnPoint);
             if (pos.equals(selectedStone)) continue;
             worldEditor.setType(pos, Material.AIR);
-            var blockCenter = pos.toLocation(world).add(0.5, 0.5, 0.5);
-            world.spawnParticle(Particle.BLOCK_CRACK, blockCenter, 30, Material.COBBLESTONE.createBlockData());
-            world.playSound(blockCenter, Sound.BLOCK_STONE_BREAK, 1, 1);
+            var blockCenter = pos.toVec3d().add(0.5, 0.5, 0.5);
+            spawnParticle(Particle.BLOCK_CRACK, blockCenter, 30, Material.COBBLESTONE.createBlockData());
+            playSound(blockCenter, Sound.BLOCK_STONE_BREAK, 1, 1);
             trackEntity(prizeSelector.getRandomPrize().createVirtualItem(pos.toVec3d().add(0.5, 0.3, 0.5)));
         }
         stoneToSword.values().forEach(this::removeEntity);
@@ -117,8 +117,8 @@ public class SwordsAnim extends AbstractAnimation {
         Vec3d destPos = new Vec3d(dest).add(0.9, 0.9, 0.3);
         playSound(Sound.ENTITY_FIREWORK_ROCKET_LAUNCH, 1, 1);
         Vec3d startPos = armorStand.getPos();
-        world.spawnParticle(Particle.SPELL_WITCH, startPos.x, startPos.y + 1.3, startPos.z, 30, 0, 0, 0, 0.01);
-        world.spawnParticle(Particle.REVERSE_PORTAL, startPos.x, startPos.y + 1.3, startPos.z, 30, 0, 0, 0, 0.1);
+        spawnParticle(Particle.SPELL_WITCH, startPos.x, startPos.y + 1.3, startPos.z, 30, 0, 0, 0, 0.01);
+        spawnParticle(Particle.REVERSE_PORTAL, startPos.x, startPos.y + 1.3, startPos.z, 30, 0, 0, 0, 0.1);
         MoveEngine.goToParabola(
                         armorStand,
                         destPos,
@@ -126,10 +126,10 @@ public class SwordsAnim extends AbstractAnimation {
                         5
                 )
                 .onEnd(() -> {
-                    world.playSound(destPos.toLocation(world), Sound.ITEM_TRIDENT_HIT_GROUND, 1, 1);
-                    world.playSound(destPos.toLocation(world), Sound.ITEM_TRIDENT_RETURN, 10, 10);
+                    playSound(destPos, Sound.ITEM_TRIDENT_HIT_GROUND, 1, 1);
+                    playSound(destPos, Sound.ITEM_TRIDENT_RETURN, 10, 10);
                     Vec3d pos = destPos.add(0.5, 1, 0.5);
-                    world.spawnParticle(Particle.CLOUD, pos.x, pos.y, pos.z, 3, 0, 0, 0, 0.1);
+                    spawnParticle(Particle.CLOUD, pos.x, pos.y, pos.z, 3, 0, 0, 0, 0.1);
                     worldEditor.setType(dest, Material.COBBLESTONE);
                 })
                 .start(this);

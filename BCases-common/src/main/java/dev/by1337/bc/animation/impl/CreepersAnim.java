@@ -64,7 +64,7 @@ public class CreepersAnim extends AbstractAnimation {
             creeper.setPos(pos);
             trackEntity(creeper);
             playSound(Sound.BLOCK_GILDED_BLACKSTONE_FALL, 1, 1);
-            world.spawnParticle(Particle.CLOUD, pos.add(0, 0.3, 0).toLocation(world), 15, 0, 0, 0, 0.05);
+            spawnParticle(Particle.CLOUD, pos.add(0, 0.3, 0), 15, 0, 0, 0, 0.05);
             sleep(config.spawnDelay);
         }
         sendTitle("", config.title, 5, 30, 10);
@@ -82,9 +82,9 @@ public class CreepersAnim extends AbstractAnimation {
         sleepTicks(30);
         tracker.removeEntity(clickedEntity);
 
-        world.playSound(clickedEntity.getPos().toLocation(world), Sound.ENTITY_GENERIC_EXPLODE, 0.5f, 0.5f);
-        world.spawnParticle(Particle.EXPLOSION_HUGE, clickedEntity.getPos().toLocation(world), 0);
-        world.spawnParticle(Particle.CLOUD, clickedEntity.getPos().toLocation(world), 30, 0, 0, 0, 0.05);
+        playSound(clickedEntity.getPos(), Sound.ENTITY_GENERIC_EXPLODE, 0.5f, 0.5f);
+        spawnParticle(Particle.EXPLOSION_HUGE, clickedEntity.getPos(), 0);
+        spawnParticle(Particle.CLOUD, clickedEntity.getPos(), 30, 0, 0, 0, 0.05);
 
         for (int i = 0; i < 35; i++) {
             Vec3d motion = new Vec3d(
@@ -101,19 +101,17 @@ public class CreepersAnim extends AbstractAnimation {
             );
         }
 
-        world.spawnParticle(Particle.FLAME, clickedEntity.getPos().toLocation(world), 50, 0, 0, 0, 0.5);
+        spawnParticle(Particle.FLAME, clickedEntity.getPos(), 50, 0, 0, 0, 0.5);
         new AsyncTask() {
             final Vec3d pos = clickedEntity.getPos();
 
             @Override
             public void run() {
-                ParticleUtil.spawnBlockOutlining(pos, world, Particle.FLAME, 0.1);
+                ParticleUtil.spawnBlockOutlining(pos, CreepersAnim.this, Particle.FLAME, 0.1);
             }
         }.timer().delay(6).start(this);
 
         trackEntity(winner.createVirtualItem(clickedEntity.getPos()));
-
-        sleepTicks(3 * 20);
 
         sleep(config.idle);
         lookTask.cancel();

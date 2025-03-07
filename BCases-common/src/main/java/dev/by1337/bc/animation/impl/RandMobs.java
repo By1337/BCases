@@ -81,12 +81,12 @@ public class RandMobs extends AbstractAnimation {
         }
         clickedEntity.setHealth(0);
         clickedEntity.broadcastEntityEvent(EntityEvent.DEATH);
-        world.spawnParticle(Particle.FLAME, clickedEntity.getPos().toLocation(world), 50, 0, 0, 0, 0.5);
+        spawnParticle(Particle.FLAME, clickedEntity.getPos(), 50, 0, 0, 0, 0.5);
         new AsyncTask() {
             final Vec3d pos = clickedEntity.getPos();
             @Override
             public void run() {
-                ParticleUtil.spawnBlockOutlining(pos, world, Particle.FLAME, 0.1);
+                ParticleUtil.spawnBlockOutlining(pos, RandMobs.this, Particle.FLAME, 0.1);
             }
         }.timer().delay(6).start(this);
 

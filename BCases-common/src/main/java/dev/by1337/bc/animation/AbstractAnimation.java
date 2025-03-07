@@ -11,6 +11,7 @@ import dev.by1337.bc.tracker.ViewerTracker;
 import dev.by1337.bc.util.AsyncCatcher;
 import dev.by1337.bc.util.ThrowingRunnable;
 import dev.by1337.bc.yaml.CashedYamlContext;
+import dev.by1337.virtualentity.api.util.PlayerHashSet;
 import dev.by1337.virtualentity.api.virtual.VirtualEntity;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -25,8 +26,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Random;
+import java.util.Set;
 
-public abstract class AbstractAnimation implements Animation {
+public abstract class AbstractAnimation extends WorldUtil implements Animation {
     public static final Random RANDOM = new Random();
     protected final Logger logger;
     private final AnimationContext context;
@@ -126,10 +128,6 @@ public abstract class AbstractAnimation implements Animation {
             forceStop();
         }
         return true;
-    }
-
-    public void playSound(Sound sound, float volume, float pitch) {
-        world.playSound(location, sound, volume, pitch);
     }
 
     public void trackEntity(VirtualEntity entity) {
@@ -237,4 +235,12 @@ public abstract class AbstractAnimation implements Animation {
         message.sendActionBar(player, msg);
     }
 
+    public Set<Player> getViewers() {
+        return tracker.getViewers();
+    }
+
+    @Override
+    public Location getCenter() {
+        return location;
+    }
 }

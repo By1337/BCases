@@ -1,12 +1,15 @@
 package dev.by1337.bc.animation;
 
 import dev.by1337.bc.CaseBlock;
-import dev.by1337.bc.animation.impl.*;
+import dev.by1337.bc.animation.impl.CreepersAnim;
+import dev.by1337.bc.animation.impl.RandMobs;
+import dev.by1337.bc.animation.impl.SwordsAnim;
 import dev.by1337.bc.prize.PrizeSelector;
 import dev.by1337.bc.yaml.CashedYamlContext;
 import org.bukkit.entity.Player;
 import org.by1337.blib.util.SpacedNameKey;
 import org.by1337.blib.util.collection.SpacedNameRegistry;
+import org.jetbrains.annotations.Nullable;
 
 public class AnimationRegistry extends SpacedNameRegistry<AnimationRegistry.AnimationCreator> {
     public static final AnimationRegistry INSTANCE = new AnimationRegistry();
@@ -20,6 +23,11 @@ public class AnimationRegistry extends SpacedNameRegistry<AnimationRegistry.Anim
     public AnimationCreator register(String id, AnimationCreator creator) {
         put(new SpacedNameKey(id), creator);
         return creator;
+    }
+
+    @Nullable
+    public AnimationCreator unregister(SpacedNameKey id) {
+        return remove(id);
     }
 
     public AnimationCreator lookup(String id) {

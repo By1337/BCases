@@ -4,7 +4,6 @@ import dev.by1337.bc.yaml.CashedYamlContext;
 import org.bukkit.plugin.Plugin;
 import org.by1337.blib.configuration.YamlConfig;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 import java.util.*;
@@ -20,10 +19,15 @@ public class AnimationLoader {
         this.plugin = plugin;
     }
 
+    public Collection<String> keySet() {
+        return animations.keySet();
+    }
+
     @NotNull
     public AnimationData getAnimation(String animationName) {
         return Objects.requireNonNull(animations.get(animationName), "Unknown animation: " + animationName);
     }
+
     public AnimationData getRandomAnimation() {
         return animationDataList.get(random.nextInt(animationDataList.size()));
     }

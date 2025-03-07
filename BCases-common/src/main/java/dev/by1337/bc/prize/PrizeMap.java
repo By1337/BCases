@@ -23,7 +23,7 @@ public class PrizeMap {
     public boolean hasPrizeSet(String name) {
         return prizes.containsKey(name);
     }
-    public Set<String> keys(){
+    public Set<String> keySet(){
         return prizes.keySet();
     }
 

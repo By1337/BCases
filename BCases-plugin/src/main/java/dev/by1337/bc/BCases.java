@@ -81,9 +81,6 @@ public class BCases extends JavaPlugin {
 
         animationContext = new AnimationContextImpl(this);
 
-        commandWrapper = new CommandWrapper(createCommand(), this);
-        commandWrapper.setPermission("bcases.admin");
-        commandWrapper.register();
 
         addonLoader = new AddonLoader(this, new File(getDataFolder(), "addons"));
         addonLoader.findAddons();
@@ -94,6 +91,10 @@ public class BCases extends JavaPlugin {
 
         animationLoader = new AnimationLoader(this);
         animationLoader.load();
+
+        commandWrapper = new CommandWrapper(createCommand(), this); // обязательно после загрузки анимаций
+        commandWrapper.setPermission("bcases.admin");
+        commandWrapper.register();
 
     }
 
@@ -133,7 +134,7 @@ public class BCases extends JavaPlugin {
                                 new ArgumentPlayer<>("player"),
                                 new ArgumentString<>("player")
                         ))
-                        .argument(new ArgumentString<>("id", new ArrayList<>(prizeMap.keys())))
+                        .argument(new ArgumentString<>("id", new ArrayList<>(prizeMap.keySet())))
                         .argument(new ArgumentInteger<>("count", List.of("1", "10", "25", "50")))
                         .argument(new ArgumentString<>("duration", List.of("7d", "14d", "31d")))
                         .executor(((sender, args) -> {
@@ -165,7 +166,7 @@ public class BCases extends JavaPlugin {
                                 new ArgumentPlayer<>("player"),
                                 new ArgumentString<>("player")
                         ))
-                        .argument(new ArgumentString<>("id", new ArrayList<>(prizeMap.keys())))
+                        .argument(new ArgumentString<>("id", new ArrayList<>(prizeMap.keySet())))
                         .argument(new ArgumentInteger<>("count", List.of("1", "10", "25", "50")))
                         .executor(((sender, args) -> {
                             Object player = args.getOrThrow("player", "Use: /bcases take <player> <key id> <?count> <?duration>");
@@ -221,6 +222,21 @@ public class BCases extends JavaPlugin {
                             blockManager.addBlock(caseBlock);
                             blockManager.saveConfig();
                             message.sendMsg(sender, "&a[✔] &fУспешно установил кейс");
+                        }))
+                )
+
+                .addSubCommand(new Command<CommandSender>("play")
+                        .requires(sender -> sender instanceof Player)
+                        .requires(sender -> lookingAtCaseUtil.getLookingAtCaseBlock((Player) sender) != null)
+                        .argument(new ArgumentChoice<>("animation", new ArrayList<>(animationLoader.keySet())))
+                        .argument(new ArgumentChoice<>("prizes", new ArrayList<>(prizeMap.keySet())))
+                        .executor(((sender, args) -> {
+                            CaseBlockImpl block = lookingAtCaseUtil.getLookingAtCaseBlock((Player) sender);
+                            if (block == null) throw new CommandException("Block not found!");
+                            String animation = (String) args.getOrThrow("animation", "Use: /bcases play <animation> <prizes>");
+                            String prizes = (String) args.getOrThrow("prizes", "Use: /bcases play <animation> <prizes>");
+
+                            block.playAnimation((Player) sender, animation, prizes);
                         }))
                 )
                 ;

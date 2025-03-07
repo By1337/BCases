@@ -8,6 +8,7 @@ import dev.by1337.bc.bd.CaseKey;
 import dev.by1337.bc.bd.Database;
 import dev.by1337.bc.bd.User;
 import dev.by1337.bc.db.MemoryDatabase;
+import dev.by1337.bc.db.SqlDatabase;
 import dev.by1337.bc.hologram.HologramManager;
 import dev.by1337.bc.hook.papi.PapiHook;
 import dev.by1337.bc.menu.CaseDefaultMenu;
@@ -19,14 +20,17 @@ import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.by1337.blib.BLib;
 import org.by1337.blib.chat.util.Message;
 import org.by1337.blib.command.Command;
 import org.by1337.blib.command.CommandException;
 import org.by1337.blib.command.CommandWrapper;
 import org.by1337.blib.command.argument.*;
 import org.by1337.blib.command.requires.RequiresPermission;
+import org.by1337.blib.configuration.YamlConfig;
 import org.by1337.blib.geom.Vec3d;
 import org.by1337.blib.geom.Vec3i;
+import org.by1337.blib.net.RepositoryUtil;
 import org.by1337.blib.util.ResourceUtil;
 import org.by1337.blib.util.SpacedNameKey;
 import org.by1337.blib.util.invoke.LambdaMetafactoryUtil;
@@ -35,6 +39,7 @@ import org.by1337.bmenu.MenuLoader;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.BiConsumer;
@@ -63,15 +68,25 @@ public class BCases extends JavaPlugin {
         if (!new File(getDataFolder(), "menu").exists()) {
             ResourceUtil.saveIfNotExist("menu/default.yml", this);
         }
+
+        try {
+            Class.forName("com.zaxxer.hikari.HikariConfig");
+        } catch (Throwable t) {
+            Path cp = RepositoryUtil.downloadIfNotExist("https://repo1.maven.org/maven2", "com.zaxxer", "HikariCP", "5.1.0", new File(getDataFolder(), "libraries").toPath());
+            BLib.getApi().getUnsafe().getPluginClasspathUtil().addUrl(this, cp.toFile());
+        }
+
         message = new Message(getLogger());
         menuLoader = new MenuLoader(new File(getDataFolder(), "menu"), this);
         menuLoader.getRegistry().register(new SpacedNameKey("bcases:case"), CaseDefaultMenu::new);
 
     }
 
+
     @Override
     public void onEnable() {
-        database = new MemoryDatabase();
+        loadDb();
+
         papiHook = new PapiHook(this, database);
         papiHook.register();
 
@@ -96,6 +111,27 @@ public class BCases extends JavaPlugin {
         commandWrapper.setPermission("bcases.admin");
         commandWrapper.register();
 
+    }
+
+    private void loadDb() {
+        YamlConfig config = ResourceUtil.load("config.yml", this);
+        String dbType = config.getAsString("database_type");
+        if (dbType.equalsIgnoreCase("mariadb")) {
+            loadMariaDbDriver();
+            database = new SqlDatabase(config.get("database").decode(SqlDatabase.Config.CODEC).getOrThrow().getFirst(), this);
+        } else if (dbType.equalsIgnoreCase("mysql")) {
+            database = new SqlDatabase(config.get("database").decode(SqlDatabase.Config.CODEC).getOrThrow().getFirst(), this);
+        } else if (dbType.equalsIgnoreCase("memory")) {
+            database = new MemoryDatabase();
+        } else {
+            getSLF4JLogger().error("Unknown db type {}", dbType);
+            database = new MemoryDatabase();
+        }
+    }
+
+    private void loadMariaDbDriver() {
+        Path cp = RepositoryUtil.downloadIfNotExist("https://repo1.maven.org/maven2", "org.mariadb.jdbc", "mariadb-java-client", "3.5.2", new File(getDataFolder(), "libraries").toPath());
+        BLib.getApi().getUnsafe().getPluginClasspathUtil().addUrl(this, cp.toFile());
     }
 
     @Override

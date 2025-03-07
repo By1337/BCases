@@ -27,6 +27,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.Random;
 import java.util.Set;
+import java.util.function.Consumer;
 
 public abstract class AbstractAnimation extends WorldUtil implements Animation {
     public static final Random RANDOM = new Random();
@@ -235,8 +236,8 @@ public abstract class AbstractAnimation extends WorldUtil implements Animation {
         message.sendActionBar(player, msg);
     }
 
-    public Set<Player> getViewers() {
-        return tracker.getViewers();
+    public void forEachViewers(Consumer<Player> consumer) {
+        tracker.forEachViewers(consumer);
     }
 
     @Override

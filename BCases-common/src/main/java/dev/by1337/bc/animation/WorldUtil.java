@@ -7,20 +7,20 @@ import org.by1337.blib.geom.Vec3i;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Set;
+import java.util.function.Consumer;
 
 public abstract class WorldUtil {
 
-    public abstract Set<Player> getViewers();
+    public abstract void forEachViewers(Consumer<Player> consumer);
 
     public abstract Location getCenter();
 
     public void playEffect(@NotNull Location location, @NotNull Effect effect, int data) {
-        getViewers().forEach(player -> player.playEffect(location, effect, data));
+        forEachViewers(player -> player.playEffect(location, effect, data));
     }
 
     public <T> void playEffect(@NotNull Location location, @NotNull Effect effect, @Nullable T data) {
-        getViewers().forEach(player -> player.playEffect(location, effect, data));
+        forEachViewers(player -> player.playEffect(location, effect, data));
     }
 
     public <T> void playEffect(@NotNull Effect effect, @Nullable T data) {
@@ -36,7 +36,7 @@ public abstract class WorldUtil {
     }
 
     public void playSound(@NotNull Location location, @NotNull Sound sound, float volume, float pitch) {
-        getViewers().forEach(player -> player.playSound(location, sound, volume, pitch));
+        forEachViewers(player -> player.playSound(location, sound, volume, pitch));
     }
 
     public void playSound(@NotNull Sound sound, float volume, float pitch) {
@@ -44,7 +44,7 @@ public abstract class WorldUtil {
     }
 
     public void playSound(@NotNull Location location, @NotNull Sound sound, @NotNull SoundCategory category, float volume, float pitch) {
-        getViewers().forEach(player -> player.playSound(location, sound, category, volume, pitch));
+        forEachViewers(player -> player.playSound(location, sound, category, volume, pitch));
     }
 
     public void playSound(@NotNull Sound sound, @NotNull SoundCategory category, float volume, float pitch) {
@@ -119,9 +119,11 @@ public abstract class WorldUtil {
     public void spawnParticle(Particle particle, Location location, int count, double offsetX, double offsetY, double offsetZ, double extra) {
         this.spawnParticle(particle, location.getX(), location.getY(), location.getZ(), count, offsetX, offsetY, offsetZ, extra);
     }
+
     public void spawnParticle(Particle particle, Vec3d location, int count, double offsetX, double offsetY, double offsetZ, double extra) {
         this.spawnParticle(particle, location.x, location.y, location.z, count, offsetX, offsetY, offsetZ, extra);
     }
+
     public void spawnParticle(Particle particle, Vec3i location, int count, double offsetX, double offsetY, double offsetZ, double extra) {
         this.spawnParticle(particle, location.x, location.y, location.z, count, offsetX, offsetY, offsetZ, extra);
     }
@@ -133,6 +135,7 @@ public abstract class WorldUtil {
     public <T> void spawnParticle(Particle particle, Location location, int count, double offsetX, double offsetY, double offsetZ, double extra, T data) {
         this.spawnParticle(particle, location.getX(), location.getY(), location.getZ(), count, offsetX, offsetY, offsetZ, extra, data);
     }
+
     public <T> void spawnParticle(Particle particle, Vec3d location, int count, double offsetX, double offsetY, double offsetZ, double extra, T data) {
         this.spawnParticle(particle, location.x, location.y, location.z, count, offsetX, offsetY, offsetZ, extra, data);
     }
@@ -142,6 +145,6 @@ public abstract class WorldUtil {
     }
 
     public <T> void spawnParticle(Particle particle, double x, double y, double z, int count, double offsetX, double offsetY, double offsetZ, double extra, T data) {
-        getViewers().forEach(pl -> pl.spawnParticle(particle, x, y, z, count, offsetX, offsetY, offsetZ, extra, data));
+        forEachViewers(pl -> pl.spawnParticle(particle, x, y, z, count, offsetX, offsetY, offsetZ, extra, data));
     }
 }

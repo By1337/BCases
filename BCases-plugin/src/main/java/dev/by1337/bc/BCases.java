@@ -297,7 +297,7 @@ public class BCases extends JavaPlugin implements BCasesApi {
                             String item = BLib.getApi().getItemStackSerialize().serialize(itemStack);
                             player.sendMessage(
                                     Component.text(item)
-                                            .hoverEvent(HoverEvent.hoverEvent(HoverEvent.Action.SHOW_TEXT, Component.text("Нажми чтобы скопировать")))
+                                            .hoverEvent(HoverEvent.hoverEvent(HoverEvent.Action.SHOW_TEXT, Component.text("Нажмите, чтобы скопировать")))
                                             .clickEvent(ClickEvent.copyToClipboard(item))
                             );
                         }))

@@ -2,9 +2,15 @@ package dev.by1337.bc.addon;
 
 import dev.by1337.bc.BCasesApi;
 import org.bukkit.plugin.Plugin;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
+import java.net.URLConnection;
 
 public abstract class AbstractAddon {
     private Logger logger;
@@ -67,5 +73,19 @@ public abstract class AbstractAddon {
 
     public BCasesApi getBCasesApi() {
         return bCasesApi;
+    }
+    public @Nullable InputStream getResource(@NotNull String filename) {
+        try {
+            URL url = classLoader.getResource(filename);
+            if (url == null) {
+                return null;
+            } else {
+                URLConnection connection = url.openConnection();
+                connection.setUseCaches(false);
+                return connection.getInputStream();
+            }
+        } catch (IOException var4) {
+            return null;
+        }
     }
 }

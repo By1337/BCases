@@ -44,7 +44,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.BiConsumer;
 
-public class BCases extends JavaPlugin {
+public class BCases extends JavaPlugin implements BCasesApi {
     private static final BiConsumer<JavaPlugin, Boolean> IS_ENABLED_SETTER;
     private PrizeMap prizeMap;
     private BlockManager blockManager;
@@ -97,7 +97,7 @@ public class BCases extends JavaPlugin {
         animationContext = new AnimationContextImpl(this);
 
 
-        addonLoader = new AddonLoader(this, new File(getDataFolder(), "addons"));
+        addonLoader = new AddonLoader(this, new File(getDataFolder(), "addons"), this);
         addonLoader.findAddons();
         addonLoader.enableAll();
 
@@ -253,7 +253,8 @@ public class BCases extends JavaPlugin {
                                     new HologramManager.Config(
                                             new Vec3d(0.5, 1.5, 0.5),
                                             List.of("&dКейсы", "&fНажми, чтобы открыть", "&bКлючей: %bcases_keys_count_of_type_default%")
-                                    )
+                                    ),
+                                    "default:none"
                             );
                             blockManager.addBlock(caseBlock);
                             blockManager.saveConfig();
@@ -298,7 +299,8 @@ public class BCases extends JavaPlugin {
         return animationLoader;
     }
 
-    public MenuLoader menuLoader() {
+    @Override
+    public MenuLoader getMenuLoader() {
         return menuLoader;
     }
 

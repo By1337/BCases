@@ -1,5 +1,6 @@
 package dev.by1337.bc.addon;
 
+import dev.by1337.bc.BCasesApi;
 import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -18,14 +19,16 @@ public class AddonClassLoader extends URLClassLoader {
     private final AddonLoader loader;
     private final AbstractAddon addon;
     private final File file;
+    private final BCasesApi bCasesApi;
 
-    public AddonClassLoader(@Nullable ClassLoader parent, AddonDescription description, Plugin plugin, File file, AddonLoader loader) throws MalformedURLException, InvalidAddonException {
+    public AddonClassLoader(@Nullable ClassLoader parent, AddonDescription description, Plugin plugin, File file, AddonLoader loader, BCasesApi bCasesApi) throws MalformedURLException, InvalidAddonException {
         super(new URL[]{file.toURI().toURL()}, parent);
 
         this.plugin = plugin;
         this.description = description;
         this.loader = loader;
         this.file = file;
+        this.bCasesApi = bCasesApi;
 
         try {
             Class<?> jarClass;
@@ -53,7 +56,7 @@ public class AddonClassLoader extends URLClassLoader {
     }
 
     void initialize(AbstractAddon addon) {
-        addon.init(LoggerFactory.getLogger("BCases#" + description.name()), description, this, file, plugin);
+        addon.init(LoggerFactory.getLogger("BCases#" + description.name()), description, this, file, plugin, bCasesApi);
     }
 
     @Override

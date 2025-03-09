@@ -2,6 +2,7 @@ blocks:
   - block: end_portal_frame
     world: world
     on_click_menu: bcases:default
+    idle_animation: default:none # на выбор default:fireworks | default:none
     pos:
       x: 0
       y: 100

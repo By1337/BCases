@@ -5,7 +5,6 @@ import blib.com.mojang.serialization.codecs.RecordCodecBuilder;
 import org.by1337.blib.configuration.serialization.DefaultCodecs;
 
 import java.util.*;
-import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 public class User {
@@ -36,6 +35,19 @@ public class User {
         keysCount = keys.values().stream().flatMapToInt(list -> IntStream.of(list.size())).sum();
     }
 
+    public void removeOutdated() {
+        for (String s : keys.keySet().toArray(new String[0])) {
+            var list = keys.get(s);
+            for (CaseKey key : list.toArray(new CaseKey[0])) {
+                if (key.removalDate() < System.currentTimeMillis()) {
+                    removeKey(key);
+                }
+            }
+            if (list.isEmpty()) {
+                keys.remove(s);
+            }
+        }
+    }
 
     public void setDatabase(Database database) {
         this.database = database;
@@ -47,7 +59,7 @@ public class User {
         return list.size();
     }
 
-    public int keysCount(){
+    public int keysCount() {
         return keysCount;
     }
 

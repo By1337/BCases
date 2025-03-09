@@ -5,6 +5,8 @@ import blib.com.mojang.serialization.codecs.RecordCodecBuilder;
 import dev.by1337.bc.animation.Animation;
 import dev.by1337.bc.animation.AnimationContext;
 import dev.by1337.bc.animation.AnimationData;
+import dev.by1337.bc.animation.idle.IdleAnimation;
+import dev.by1337.bc.animation.idle.IdleAnimationRegistry;
 import dev.by1337.bc.bd.Database;
 import dev.by1337.bc.command.CommandContext;
 import dev.by1337.bc.command.CommandRegistry;
@@ -23,7 +25,6 @@ import org.bukkit.plugin.java.PluginClassLoader;
 import org.by1337.blib.BLib;
 import org.by1337.blib.chat.placeholder.Placeholder;
 import org.by1337.blib.chat.util.Message;
-import org.by1337.blib.command.CommandException;
 import org.by1337.blib.command.StringReader;
 import org.by1337.blib.configuration.serialization.BukkitCodecs;
 import org.by1337.blib.geom.Vec3i;
@@ -32,6 +33,7 @@ import org.by1337.bmenu.MenuLoader;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.Closeable;
+import java.util.Objects;
 
 public class CaseBlockImpl extends Placeholder implements CaseBlock, Closeable {
     public static final Codec<CaseBlockImpl> CODEC = RecordCodecBuilder.create(instance -> instance.group(
@@ -39,7 +41,8 @@ public class CaseBlockImpl extends Placeholder implements CaseBlock, Closeable {
             WorldGetter.CODEC.fieldOf("world").forGetter(CaseBlockImpl::worldGetter),
             Vec3i.CODEC.fieldOf("pos").forGetter(CaseBlockImpl::pos),
             Codec.STRING.fieldOf("on_click_menu").forGetter(CaseBlockImpl::onClickMenu),
-            HologramManager.Config.CODEC.fieldOf("hologram").forGetter(v -> v.hologramManager.getConfig())
+            HologramManager.Config.CODEC.fieldOf("hologram").forGetter(v -> v.hologramManager.getConfig()),
+            Codec.STRING.optionalFieldOf("idle_animation", "default:none").forGetter(v -> v.idleAnimationId)
     ).apply(instance, CaseBlockImpl::new));
 
     private final BlockData block;
@@ -50,20 +53,24 @@ public class CaseBlockImpl extends Placeholder implements CaseBlock, Closeable {
     private final String onClickMenu;
     private volatile Animation animation;
     private final HologramManager hologramManager;
+    private final String idleAnimationId;
+    private final IdleAnimation idleAnimation;
 
-    public CaseBlockImpl(BlockData block, WorldGetter worldGetter, Vec3i pos, String onClickMenu, HologramManager.Config config) {
+    public CaseBlockImpl(BlockData block, WorldGetter worldGetter, Vec3i pos, String onClickMenu, HologramManager.Config config, String idleAnimationId) {
         this.block = block;
         this.worldGetter = worldGetter;
         this.pos = pos;
         this.onClickMenu = onClickMenu;
+        this.idleAnimationId = idleAnimationId;
         plugin = (BCases) ((PluginClassLoader) this.getClass().getClassLoader()).getPlugin(); // todo не используй ебаные костыли
         registerPlaceholder("{playing}", () -> animation != null);
         hologramManager = new HologramManager(worldGetter, pos, plugin, config);
+        idleAnimation = Objects.requireNonNull(IdleAnimationRegistry.INSTANCE.lookup(idleAnimationId), "Unknown idle animation " + idleAnimationId).create(this);
     }
 
     public void onClick(Player player) {
         if (animation != null) return;
-        Menu menu = plugin.menuLoader().create(onClickMenu, player, null);
+        Menu menu = plugin.getMenuLoader().create(onClickMenu, player, null);
         if (menu instanceof CaseDefaultMenu cdm) {
             cdm.setCaseBlock(this);
         }
@@ -83,6 +90,7 @@ public class CaseBlockImpl extends Placeholder implements CaseBlock, Closeable {
         }
         this.animation = animationData.create(this, plugin.animationContext(), this::onAnimationStop, prizeSelector, player);
         this.animation.play();
+        idleAnimation.pause();
     }
 
     public boolean onUseUnknownEntity(int entityId, Player player) {
@@ -93,16 +101,19 @@ public class CaseBlockImpl extends Placeholder implements CaseBlock, Closeable {
     private void onAnimationStop() {
         AsyncCatcher.catchOp("BlockCase#onAnimationStop");
         animation = null;
+        idleAnimation.play();
     }
 
     public void onWorldLoad() {
         showBlock();
         showHologram();
+        idleAnimation.play();
     }
 
     public void onWorldUnload() {
         hideHologram();
         hideBlock();
+        idleAnimation.pause();
     }
 
     @Override
@@ -171,6 +182,7 @@ public class CaseBlockImpl extends Placeholder implements CaseBlock, Closeable {
         }
         hologramManager.close();
         hideBlock();
+        idleAnimation.pause();
     }
 
     public String onClickMenu() {
@@ -184,7 +196,7 @@ public class CaseBlockImpl extends Placeholder implements CaseBlock, Closeable {
 
     @Override
     public MenuLoader menuLoader() {
-        return plugin.menuLoader();
+        return plugin.getMenuLoader();
     }
 
     @Override

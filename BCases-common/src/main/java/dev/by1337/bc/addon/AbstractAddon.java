@@ -1,5 +1,6 @@
 package dev.by1337.bc.addon;
 
+import dev.by1337.bc.BCasesApi;
 import org.bukkit.plugin.Plugin;
 import org.slf4j.Logger;
 
@@ -12,7 +13,7 @@ public abstract class AbstractAddon {
     private ClassLoader classLoader;
     private File file;
     private Plugin plugin;
-
+    private BCasesApi bCasesApi;
 
     public AbstractAddon() {
         ClassLoader classLoader = this.getClass().getClassLoader();
@@ -23,12 +24,13 @@ public abstract class AbstractAddon {
         }
     }
 
-    void init(Logger logger, AddonDescription description, ClassLoader classLoader, File file, Plugin plugin) {
+    void init(Logger logger, AddonDescription description, ClassLoader classLoader, File file, Plugin plugin, BCasesApi api) {
         this.logger = logger;
         this.description = description;
         this.classLoader = classLoader;
         this.file = file;
         this.plugin = plugin;
+        this.bCasesApi = api;
     }
 
     protected abstract void onEnable();
@@ -36,6 +38,7 @@ public abstract class AbstractAddon {
     protected abstract void onDisable();
 
     public void setEnabled(boolean enabled) {
+        if (enabled == isEnabled) return;
         this.isEnabled = enabled;
         if (enabled) {
             logger.info("enabling...");
@@ -60,5 +63,9 @@ public abstract class AbstractAddon {
 
     public Plugin getPlugin() {
         return plugin;
+    }
+
+    public BCasesApi getBCasesApi() {
+        return bCasesApi;
     }
 }

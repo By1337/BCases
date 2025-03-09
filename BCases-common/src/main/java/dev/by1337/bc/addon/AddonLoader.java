@@ -1,5 +1,6 @@
 package dev.by1337.bc.addon;
 
+import dev.by1337.bc.BCasesApi;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.Plugin;
 import org.by1337.blib.configuration.YamlContext;
@@ -22,10 +23,12 @@ public class AddonLoader implements Closeable{
     private final Map<String, AbstractAddon> addons = new ConcurrentHashMap<>();
     private final List<AddonClassLoader> loaders = new CopyOnWriteArrayList<>();
     private final File folder;
+    private final BCasesApi bCasesApi;
 
-    public AddonLoader(Plugin plugin, File folder) {
+    public AddonLoader(Plugin plugin, File folder, BCasesApi bCasesApi) {
         this.folder = folder;
         this.plugin = plugin;
+        this.bCasesApi = bCasesApi;
         folder.mkdirs();
     }
 
@@ -34,7 +37,7 @@ public class AddonLoader implements Closeable{
             if (file.getName().endsWith(".jar")) {
                 try {
                     AddonDescription description = new AddonDescription(readFileContentFromJar(file));
-                    AddonClassLoader addonClassLoader = new AddonClassLoader(this.getClass().getClassLoader(), description, plugin, file, this);
+                    AddonClassLoader addonClassLoader = new AddonClassLoader(this.getClass().getClassLoader(), description, plugin, file, this, bCasesApi);
                     loaders.add(addonClassLoader);
                     addons.put(description.name(), addonClassLoader.addon());
                 } catch (Throwable e) {

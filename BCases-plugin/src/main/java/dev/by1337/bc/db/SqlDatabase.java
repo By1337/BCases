@@ -181,7 +181,9 @@ public class SqlDatabase implements Database, Listener {
                             keys.computeIfAbsent(id, k -> new ArrayList<>()).add(new CaseKey(id, issue_date, removal_date));
                         }
                     }
-                    return new User(playerName, playerUUID, SqlDatabase.this, keys);
+                    var user = new User(playerName, playerUUID, SqlDatabase.this, keys);
+                    user.removeOutdated();
+                    return user;
                 }
             } catch (Throwable e) {
                 LOGGER.error("Failed to load user! name={} uuid={}", name, uuid, e);
@@ -211,7 +213,7 @@ public class SqlDatabase implements Database, Listener {
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
-    public void onJoin(PlayerJoinEvent event){
+    public void onJoin(PlayerJoinEvent event) {
         Player player = event.getPlayer();
         loadUser(player.getName(), player.getUniqueId()).thenAccept(user -> {
             users.put(player.getUniqueId(), user);
@@ -219,7 +221,7 @@ public class SqlDatabase implements Database, Listener {
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
-    public void onQuit(PlayerQuitEvent event){
+    public void onQuit(PlayerQuitEvent event) {
         users.remove(event.getPlayer().getUniqueId());
     }
 
@@ -255,5 +257,13 @@ public class SqlDatabase implements Database, Listener {
                     ", type=" + type +
                     '}';
         }
+    }
+
+    public Config getConfig() {
+        return config;
+    }
+
+    public HikariDataSource getDataSource() {
+        return dataSource;
     }
 }

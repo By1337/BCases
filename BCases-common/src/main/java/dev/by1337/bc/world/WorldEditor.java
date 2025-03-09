@@ -32,6 +32,10 @@ public class WorldEditor implements Closeable {
         stream.addToReplace(pos, material);
     }
 
+    public void setType(Vec3i pos, BlockData data) {
+        stream.addToReplace(pos, data);
+    }
+
     @Override
     public void close() {
         originalState.forEach(stream::addToReplace);

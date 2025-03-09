@@ -2,6 +2,7 @@ package dev.by1337.bc.command;
 
 import dev.by1337.bc.bd.User;
 import org.bukkit.Bukkit;
+import org.bukkit.inventory.ItemStack;
 import org.by1337.blib.BLib;
 import org.by1337.blib.command.Command;
 import org.by1337.blib.command.CommandException;
@@ -60,6 +61,17 @@ public class CommandRegistry {
                         .executor((sender, args) -> {
                             String msg = (String) args.getOrThrow("cmd", "Use: [CONSOLE] <cmd>");
                             Bukkit.dispatchCommand(Bukkit.getConsoleSender(), msg);
+                        })
+        ).addSubCommand(
+                new Command<CommandContext>("[GIVE]")
+                        .aliases("[give]")
+                        .argument(new ArgumentStrings<>("item"))
+                        .executor((sender, args) -> {
+                            String item = (String) args.getOrThrow("item", "Use: [GIVE] <item>");
+                            ItemStack itemStack = BLib.getApi().getItemStackSerialize().deserialize(item);
+                            sender.player().getInventory().addItem(itemStack).forEach((slot, i) -> {
+                                sender.player().getWorld().dropItem(sender.player().getLocation(), itemStack);
+                            });
                         })
         )
         ;

@@ -16,9 +16,13 @@ import dev.by1337.bc.prize.PrizeMap;
 import dev.by1337.bc.util.LookingAtCaseBlockUtil;
 import dev.by1337.bc.util.TimeParser;
 import dev.by1337.bc.world.WorldGetter;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.event.ClickEvent;
+import net.kyori.adventure.text.event.HoverEvent;
 import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.by1337.blib.BLib;
 import org.by1337.blib.chat.util.Message;
@@ -166,6 +170,7 @@ public class BCases extends JavaPlugin implements BCasesApi {
                 .aliases("case")
                 .requires(new RequiresPermission<>("bcases.admin"))
                 .addSubCommand(new Command<CommandSender>("give")
+                        .requires(new RequiresPermission<>("bcases.admin.give"))
                         .argument(new MultiArgument<>("player",
                                 new ArgumentPlayer<>("player"),
                                 new ArgumentString<>("player")
@@ -198,6 +203,7 @@ public class BCases extends JavaPlugin implements BCasesApi {
                         }))
                 )
                 .addSubCommand(new Command<CommandSender>("take")
+                        .requires(new RequiresPermission<>("bcases.admin.take"))
                         .argument(new MultiArgument<>("player",
                                 new ArgumentPlayer<>("player"),
                                 new ArgumentString<>("player")
@@ -228,6 +234,7 @@ public class BCases extends JavaPlugin implements BCasesApi {
                         }))
                 )
                 .addSubCommand(new Command<CommandSender>("remove")
+                        .requires(new RequiresPermission<>("bcases.admin.remove"))
                         .requires(sender -> sender instanceof Player)
                         .requires(sender -> lookingAtCaseUtil.getLookingAtCaseBlock((Player) sender) != null)
                         .executor(((sender, args) -> {
@@ -239,6 +246,7 @@ public class BCases extends JavaPlugin implements BCasesApi {
                         }))
                 )
                 .addSubCommand(new Command<CommandSender>("set")
+                        .requires(new RequiresPermission<>("bcases.admin.set"))
                         .requires(sender -> sender instanceof Player)
                         .argument(new ArgumentLookingAtBlock<>("pos"))
                         .executor(((sender, args) -> {
@@ -263,6 +271,7 @@ public class BCases extends JavaPlugin implements BCasesApi {
                 )
 
                 .addSubCommand(new Command<CommandSender>("play")
+                        .requires(new RequiresPermission<>("bcases.admin.play"))
                         .requires(sender -> sender instanceof Player)
                         .requires(sender -> lookingAtCaseUtil.getLookingAtCaseBlock((Player) sender) != null)
                         .argument(new ArgumentChoice<>("animation", new ArrayList<>(animationLoader.keySet())))
@@ -274,6 +283,23 @@ public class BCases extends JavaPlugin implements BCasesApi {
                             String prizes = (String) args.getOrThrow("prizes", "Use: /bcases play <animation> <prizes>");
 
                             block.playAnimation((Player) sender, animation, prizes);
+                        }))
+                )
+                .addSubCommand(new Command<CommandSender>("dump")
+                        .requires(new RequiresPermission<>("bcases.admin.dump"))
+                        .requires(sender -> sender instanceof Player)
+                        .executor(((sender, args) -> {
+                                Player player = (Player) sender;
+                            ItemStack itemStack = player.getInventory().getItemInMainHand();
+                            if (itemStack.getType().isAir()){
+                                message.sendMsg(sender, "&c[❌] &fУ Вас в руке должен быть предмет!");
+                            }
+                            String item = BLib.getApi().getItemStackSerialize().serialize(itemStack);
+                            player.sendMessage(
+                                    Component.text(item)
+                                            .hoverEvent(HoverEvent.hoverEvent(HoverEvent.Action.SHOW_TEXT, Component.text("Нажми чтобы скопировать")))
+                                            .clickEvent(ClickEvent.copyToClipboard(item))
+                            );
                         }))
                 )
                 ;

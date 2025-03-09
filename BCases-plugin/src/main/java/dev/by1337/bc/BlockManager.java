@@ -5,8 +5,10 @@ import org.bukkit.Location;
 import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.world.WorldLoadEvent;
 import org.bukkit.event.world.WorldUnloadEvent;
 import org.bukkit.persistence.PersistentDataType;
@@ -125,6 +127,17 @@ public class BlockManager implements Listener, Closeable {
     public void onWorldUnload(WorldUnloadEvent event) {
         for (CaseBlockImpl caseBlock : blocks.getAllInWorld(event.getWorld().getName())) {
             caseBlock.onWorldUnload();
+        }
+    }
+
+    @EventHandler(priority = EventPriority.LOWEST)
+    public void onQuit(PlayerQuitEvent event) {
+        for (CaseBlockImpl caseBlock : blockList) {
+            var anim = caseBlock.animation();
+            if (anim != null && anim.getPlayer().equals(event.getPlayer())) {
+                anim.forceStop();
+                return;
+            }
         }
     }
 

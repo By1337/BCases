@@ -22,6 +22,7 @@ import net.kyori.adventure.text.event.HoverEvent;
 import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.event.HandlerList;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.by1337.blib.BLib;
@@ -46,6 +47,7 @@ import java.lang.reflect.Field;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import java.util.function.BiConsumer;
 
 public class BCases extends JavaPlugin implements BCasesApi {
@@ -289,9 +291,9 @@ public class BCases extends JavaPlugin implements BCasesApi {
                         .requires(new RequiresPermission<>("bcases.admin.dump"))
                         .requires(sender -> sender instanceof Player)
                         .executor(((sender, args) -> {
-                                Player player = (Player) sender;
+                            Player player = (Player) sender;
                             ItemStack itemStack = player.getInventory().getItemInMainHand();
-                            if (itemStack.getType().isAir()){
+                            if (itemStack.getType().isAir()) {
                                 message.sendMsg(sender, "&c[❌] &fУ Вас в руке должен быть предмет!");
                             }
                             String item = BLib.getApi().getItemStackSerialize().serialize(itemStack);
@@ -300,6 +302,17 @@ public class BCases extends JavaPlugin implements BCasesApi {
                                             .hoverEvent(HoverEvent.hoverEvent(HoverEvent.Action.SHOW_TEXT, Component.text("Нажмите, чтобы скопировать")))
                                             .clickEvent(ClickEvent.copyToClipboard(item))
                             );
+                        }))
+                )
+                .addSubCommand(new Command<CommandSender>("reload")
+                        .requires(new RequiresPermission<>("bcases.admin.reload"))
+                        .executor(((sender, args) -> {
+                            long nanos = System.nanoTime();
+                            onDisable0();
+                            HandlerList.unregisterAll(this);
+                            onLoad();
+                            onEnable();
+                            message.sendMsg(sender, "&a[✔] &fПлагин успешно перезагружен за {} ms.", TimeUnit.NANOSECONDS.toMillis(System.nanoTime() - nanos));
                         }))
                 )
                 ;

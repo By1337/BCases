@@ -7,10 +7,12 @@ import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.Objects;
 
 public abstract class AbstractAddon {
     private Logger logger;
@@ -74,6 +76,7 @@ public abstract class AbstractAddon {
     public BCasesApi getBCasesApi() {
         return bCasesApi;
     }
+
     public @Nullable InputStream getResource(@NotNull String filename) {
         try {
             URL url = classLoader.getResource(filename);
@@ -86,6 +89,23 @@ public abstract class AbstractAddon {
             }
         } catch (IOException var4) {
             return null;
+        }
+    }
+
+    public void saveResourceToFile(String resource, File outputFile) {
+        if (outputFile.exists()) return;
+        outputFile.getParentFile().mkdirs();
+
+        try (var in = Objects.requireNonNull(getResource(resource), "Resource " + resource + " not found!")) {
+            try (var out = new FileOutputStream(outputFile)) {
+                byte[] buffer = new byte[1024];
+                int length;
+                while ((length = in.read(buffer)) > 0) {
+                    out.write(buffer, 0, length);
+                }
+            }
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
     }
 }

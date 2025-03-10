@@ -13,6 +13,11 @@ defaults:
     - '&fПолучен: &6{issue_date}'
     - '&fЗакончится: &6{removal_date}'
 
+expired:
+  display_name: '&cЭтот ключ просрочен :('
+  material: barrier
+  static: true
+
 crates:
   default:
     display_name: '&6Обычный кейс'

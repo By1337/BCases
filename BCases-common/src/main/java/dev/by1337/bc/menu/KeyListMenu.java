@@ -26,11 +26,13 @@ public class KeyListMenu extends MultiPageMenu<CaseKey> implements CaseMenu {
 
     private CaseBlock caseBlock;
     private User user;
+    private final MenuItemBuilder expiredItem;
 
     public KeyListMenu(MenuConfig config, Player viewer, @Nullable Menu previousMenu) {
         super(config, viewer, previousMenu);
         setItemSlots(config.getCashedContext().get("data-slots", v -> AnimationUtil.readSlots(v.getAsString())));
         keyItems = config.getCashedContext().get("crates", v -> v.getAsMap(YamlValue::getAsString, v1 -> MenuItemBuilder.read(v1.getAsYamlContext(), loader)));
+        expiredItem = config.getCashedContext().get("expired", v -> MenuItemBuilder.read(v.getAsYamlContext(), loader));
     }
 
     @Override
@@ -41,18 +43,32 @@ public class KeyListMenu extends MultiPageMenu<CaseKey> implements CaseMenu {
 
     @Override
     protected MenuItem map(CaseKey input) {
+        if (input.removalDate() < System.currentTimeMillis()) {
+            return expiredItem.build(this);
+        }
         input.initPlaceholders(caseBlock.getBCasesApi());
         MenuItemBuilder builder = keyItems.get(input.id());
         var item = builder.build(this, null, input);
         if (item == null) return null;
         item.setData(input);
+
+        item.setBuilder(() -> map(input));
         return item;
     }
 
     @Override
     protected List<CaseKey> getItems() {
         var list = user.getAllKeys();
-        list.removeIf(k -> !keyItems.containsKey(k.id()));
+        list.removeIf(k -> {
+            if (!keyItems.containsKey(k.id())) {
+                return true;
+            }
+            if (k.removalDate() < System.currentTimeMillis()) {
+                user.removeKey(k);
+                return true;
+            }
+            return false;
+        });
         return list;
     }
 
@@ -73,6 +89,7 @@ public class KeyListMenu extends MultiPageMenu<CaseKey> implements CaseMenu {
         }
         return super.runCommand(cmd);
     }
+
     @Override
     public String replace(String string) {
         return caseBlock == null ? super.replace(string) : caseBlock.replace(super.replace(string));

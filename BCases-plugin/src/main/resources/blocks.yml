@@ -16,3 +16,21 @@ blocks:
         - '&dКейсы'
         - '&fНажми, чтобы открыть'
         - '&bКлючей: %bcases_keys_count_of_type_default%'
+
+  - block: end_portal_frame
+    world: world
+    on_click_menu: bcases:key_list
+    idle_animation: default:fireworks
+    pos:
+      x: 5
+      y: 100
+      z: 0
+    hologram:
+      offsets:
+        x: 0.5
+        y: 1.5
+        z: 0.5
+      lines:
+        - '&dКейсы'
+        - '&fНажми, чтобы открыть'
+        - '&bКлючей: %bcases_keys_count%'

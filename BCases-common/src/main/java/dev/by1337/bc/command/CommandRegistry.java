@@ -6,8 +6,11 @@ import org.bukkit.inventory.ItemStack;
 import org.by1337.blib.BLib;
 import org.by1337.blib.command.Command;
 import org.by1337.blib.command.CommandException;
+import org.by1337.blib.command.argument.ArgumentInteger;
 import org.by1337.blib.command.argument.ArgumentString;
 import org.by1337.blib.command.argument.ArgumentStrings;
+
+import java.util.Random;
 
 public class CommandRegistry {
     public static final Command<CommandContext> COMMAND = new Command<>("root");
@@ -65,10 +68,25 @@ public class CommandRegistry {
         ).addSubCommand(
                 new Command<CommandContext>("[GIVE]")
                         .aliases("[give]")
-                        .argument(new ArgumentStrings<>("item"))
+                        .argument(new ArgumentString<>("item"))
+                        .argument(new ArgumentInteger<>("min"))
+                        .argument(new ArgumentInteger<>("max"))
                         .executor((sender, args) -> {
-                            String item = (String) args.getOrThrow("item", "Use: [GIVE] <item>");
+                            String item = (String) args.getOrThrow("item", "Use: [GIVE] <item> <?min> <?max>");
+                            int min = (Integer) args.getOrDefault("min", -1);
+                            int max = (Integer) args.getOrDefault("max", -1);
+
                             ItemStack itemStack = BLib.getApi().getItemStackSerialize().deserialize(item);
+
+                            if (min > 0 && max > 0){
+                                if (min < max){
+                                    throw new CommandException("{} не может быть меньше чем {}! Команда [GIVE] {} {} {}", max, min, itemStack, min, max);
+                                }
+                                Random random = new Random();
+                                int amount = random.nextInt(max - min + 1) + min;
+                                itemStack.setAmount(amount);
+                            }
+
                             sender.player().getInventory().addItem(itemStack).forEach((slot, i) -> {
                                 sender.player().getWorld().dropItem(sender.player().getLocation(), itemStack);
                             });

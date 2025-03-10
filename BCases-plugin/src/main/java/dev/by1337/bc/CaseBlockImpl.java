@@ -10,6 +10,7 @@ import dev.by1337.bc.animation.idle.IdleAnimationRegistry;
 import dev.by1337.bc.bd.Database;
 import dev.by1337.bc.command.CommandContext;
 import dev.by1337.bc.command.CommandRegistry;
+import dev.by1337.bc.event.PrizeGiveEvent;
 import dev.by1337.bc.hologram.HologramManager;
 import dev.by1337.bc.menu.CaseDefaultMenu;
 import dev.by1337.bc.menu.CaseMenu;
@@ -18,6 +19,7 @@ import dev.by1337.bc.prize.PrizeMap;
 import dev.by1337.bc.prize.PrizeSelector;
 import dev.by1337.bc.util.AsyncCatcher;
 import dev.by1337.bc.world.WorldGetter;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.block.data.BlockData;
 import org.bukkit.entity.Player;
@@ -150,6 +152,7 @@ public class CaseBlockImpl extends Placeholder implements CaseBlock, Closeable {
     @Override
     public void givePrize(Prize prize, Player player) {
         AsyncCatcher.catchOp("BlockCase#givePrize");
+        Bukkit.getPluginManager().callEvent(new PrizeGiveEvent(player, prize, this));
         CommandContext context = new CommandContext(this, player);
         Message message = BLib.getApi().getMessage();
         for (String giveCommand : prize.giveCommands()) {

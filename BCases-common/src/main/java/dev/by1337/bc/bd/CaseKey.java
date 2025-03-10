@@ -2,9 +2,11 @@ package dev.by1337.bc.bd;
 
 import blib.com.mojang.serialization.Codec;
 import blib.com.mojang.serialization.codecs.RecordCodecBuilder;
+import dev.by1337.bc.BCasesApi;
 import org.by1337.blib.chat.placeholder.Placeholder;
+import org.jetbrains.annotations.ApiStatus;
 
-public class CaseKey extends Placeholder { //todo placeholders
+public class CaseKey extends Placeholder {
     public static final Codec<CaseKey> CODEC = RecordCodecBuilder.create(instance -> instance.group(
             Codec.STRING.fieldOf("id").forGetter(CaseKey::id),
             Codec.LONG.fieldOf("issue_date").forGetter(CaseKey::issueDate),
@@ -19,6 +21,14 @@ public class CaseKey extends Placeholder { //todo placeholders
         this.id = id;
         this.issueDate = issueDate;
         this.removalDate = removalDate;
+    }
+
+    @ApiStatus.Internal
+    @ApiStatus.Experimental
+    public void initPlaceholders(BCasesApi bCasesApi) {
+        if (placeholders.containsKey("{issue_date}")) return;
+        registerPlaceholder("{issue_date}", () -> bCasesApi.getTimeFormatter().getFormat(this.issueDate));
+        registerPlaceholder("{removal_date}", () -> bCasesApi.getTimeFormatter().getFormat(this.removalDate));
     }
 
     public String id() {

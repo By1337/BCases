@@ -35,8 +35,16 @@ public interface CaseBlock extends Placeholderable {
     Plugin plugin();
 
     Database getDatabase();
+
     PrizeMap prizeMap();
-    MenuLoader menuLoader();
+
+    default MenuLoader menuLoader() {
+        return getBCasesApi().getMenuLoader();
+    }
+
     AnimationContext animationContext();
+
     void playAnimation(Player player, String animation, String prizes);
+
+    BCasesApi getBCasesApi();
 }

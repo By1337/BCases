@@ -12,6 +12,7 @@ import dev.by1337.bc.command.CommandContext;
 import dev.by1337.bc.command.CommandRegistry;
 import dev.by1337.bc.hologram.HologramManager;
 import dev.by1337.bc.menu.CaseDefaultMenu;
+import dev.by1337.bc.menu.CaseMenu;
 import dev.by1337.bc.prize.Prize;
 import dev.by1337.bc.prize.PrizeMap;
 import dev.by1337.bc.prize.PrizeSelector;
@@ -71,8 +72,8 @@ public class CaseBlockImpl extends Placeholder implements CaseBlock, Closeable {
     public void onClick(Player player) {
         if (animation != null) return;
         Menu menu = plugin.getMenuLoader().create(onClickMenu, player, null);
-        if (menu instanceof CaseDefaultMenu cdm) {
-            cdm.setCaseBlock(this);
+        if (menu instanceof CaseMenu caseMenu) {
+            caseMenu.setCaseBlock(this);
         }
         menu.open();
     }
@@ -195,11 +196,6 @@ public class CaseBlockImpl extends Placeholder implements CaseBlock, Closeable {
     }
 
     @Override
-    public MenuLoader menuLoader() {
-        return plugin.getMenuLoader();
-    }
-
-    @Override
     public AnimationContext animationContext() {
         return plugin.animationContext();
     }
@@ -207,5 +203,9 @@ public class CaseBlockImpl extends Placeholder implements CaseBlock, Closeable {
     @Nullable
     public Animation animation() {
         return animation;
+    }
+    @Override
+    public BCasesApi getBCasesApi() {
+        return plugin;
     }
 }

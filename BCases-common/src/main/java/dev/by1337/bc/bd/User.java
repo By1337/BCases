@@ -64,7 +64,14 @@ public class User {
     }
 
     public List<CaseKey> getKeysOfType(String type) {
-        return Collections.unmodifiableList(keys.get(type));
+        return Collections.unmodifiableList(keys.getOrDefault(type, Collections.emptyList()));
+    }
+    public List<CaseKey> getAllKeys(){
+        List<CaseKey> list = new ArrayList<>();
+        for (String s : keys.keySet()) {
+            list.addAll(keys.get(s));
+        }
+        return list;
     }
 
     public void addKey(CaseKey key) {

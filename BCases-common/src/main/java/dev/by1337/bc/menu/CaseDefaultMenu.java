@@ -12,13 +12,14 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Objects;
 
-public class CaseDefaultMenu extends Menu {
+public class CaseDefaultMenu extends Menu implements CaseMenu{
     private CaseBlock caseBlock;
 
     public CaseDefaultMenu(MenuConfig config, Player viewer, @Nullable Menu previousMenu) {
         super(config, viewer, previousMenu);
     }
 
+    @Override
     public void setCaseBlock(CaseBlock caseBlock) {
         this.caseBlock = caseBlock;
     }

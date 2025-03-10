@@ -5,3 +5,40 @@ database:
   maxPoolSize: 5
   url: 'jdbc:mariadb://localhost:7876/bcases'
   #url: 'jdbc:mysql://localhost:3306/bcases' # если у вас mysql то используйте этот url
+
+
+time-format:
+  ago: 'назад'
+  in: 'через'
+  just-now: 'Только что'
+  formats:
+    years: '%years% %months%'
+    months: '%months% %days%'
+    days: '%days% %hours%'
+    hours: '%hours% %minutes%'
+    minutes: '%minutes% %seconds%'
+    seconds: '%seconds%'
+  years:
+    form-1: 'год'
+    form-2: 'года'
+    form-5: 'лет'
+  months:
+    form-1: 'месяц'
+    form-2: 'месяца'
+    form-5: 'месяцев'
+  days:
+    form-1: 'день'
+    form-2: 'дня'
+    form-5: 'дней'
+  hours:
+    form-1: 'час'
+    form-2: 'часа'
+    form-5: 'часов'
+  minutes:
+    form-1: 'минуту'
+    form-2: 'минуты'
+    form-5: 'минут'
+  seconds:
+    form-1: 'секунду'
+    form-2: 'секунды'
+    form-5: 'секунд'

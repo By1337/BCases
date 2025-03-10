@@ -12,15 +12,19 @@ import dev.by1337.bc.db.SqlDatabase;
 import dev.by1337.bc.hologram.HologramManager;
 import dev.by1337.bc.hook.papi.PapiHook;
 import dev.by1337.bc.menu.CaseDefaultMenu;
+import dev.by1337.bc.menu.KeyListMenu;
 import dev.by1337.bc.prize.PrizeMap;
 import dev.by1337.bc.util.LookingAtCaseBlockUtil;
+import dev.by1337.bc.util.TimeFormatter;
 import dev.by1337.bc.util.TimeParser;
 import dev.by1337.bc.world.WorldGetter;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.event.ClickEvent;
 import net.kyori.adventure.text.event.HoverEvent;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
 import org.bukkit.inventory.ItemStack;
@@ -33,6 +37,7 @@ import org.by1337.blib.command.CommandWrapper;
 import org.by1337.blib.command.argument.*;
 import org.by1337.blib.command.requires.RequiresPermission;
 import org.by1337.blib.configuration.YamlConfig;
+import org.by1337.blib.configuration.YamlContext;
 import org.by1337.blib.geom.Vec3d;
 import org.by1337.blib.geom.Vec3i;
 import org.by1337.blib.net.RepositoryUtil;
@@ -43,10 +48,12 @@ import org.by1337.bmenu.MenuLoader;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.lang.reflect.Field;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 import java.util.function.BiConsumer;
 
@@ -63,9 +70,12 @@ public class BCases extends JavaPlugin implements BCasesApi {
     private MenuLoader menuLoader;
     private LookingAtCaseBlockUtil lookingAtCaseUtil;
     private AddonLoader addonLoader;
+    private TimeFormatter timeFormatter;
+    private YamlConfig config;
 
     @Override
     public void onLoad() {
+        updateConfig();
         if (!new File(getDataFolder(), "animations").exists()) {
             ResourceUtil.saveIfNotExist("animations/randMobs.yml", this);
             ResourceUtil.saveIfNotExist("animations/swords.yml", this);
@@ -73,6 +83,7 @@ public class BCases extends JavaPlugin implements BCasesApi {
         }
         if (!new File(getDataFolder(), "menu").exists()) {
             ResourceUtil.saveIfNotExist("menu/default.yml", this);
+            ResourceUtil.saveIfNotExist("menu/keylist.yml", this);
         }
 
         try {
@@ -85,12 +96,15 @@ public class BCases extends JavaPlugin implements BCasesApi {
         message = new Message(getLogger());
         menuLoader = new MenuLoader(new File(getDataFolder(), "menu"), this);
         menuLoader.getRegistry().register(new SpacedNameKey("bcases:case"), CaseDefaultMenu::new);
+        menuLoader.getRegistry().register(new SpacedNameKey("bcases:key_list"), KeyListMenu::new);
 
     }
 
 
     @Override
     public void onEnable() {
+        config = ResourceUtil.load("config.yml", this);
+        timeFormatter = config.get("time-format").decode(TimeFormatter.CODEC).getOrThrow().getFirst();
         loadDb();
 
         papiHook = new PapiHook(this, database);
@@ -120,7 +134,7 @@ public class BCases extends JavaPlugin implements BCasesApi {
     }
 
     private void loadDb() {
-        YamlConfig config = ResourceUtil.load("config.yml", this);
+
         String dbType = config.getAsString("database_type");
         if (dbType.equalsIgnoreCase("mariadb")) {
             loadMariaDbDriver();
@@ -138,6 +152,28 @@ public class BCases extends JavaPlugin implements BCasesApi {
     private void loadMariaDbDriver() {
         Path cp = RepositoryUtil.downloadIfNotExist("https://repo1.maven.org/maven2", "org.mariadb.jdbc", "mariadb-java-client", "3.5.2", new File(getDataFolder(), "libraries").toPath());
         BLib.getApi().getUnsafe().getPluginClasspathUtil().addUrl(this, cp.toFile());
+    }
+
+    private void updateConfig() {
+        var cfg = ResourceUtil.load("config.yml", this);
+        YamlContext original;
+        try (var in = Objects.requireNonNull(getResource("config.yml"))) {
+            original = new YamlContext(YamlConfiguration.loadConfiguration(new InputStreamReader(in)));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        var map = original.get().getAsMap(String.class, Object.class);
+
+        boolean updated = false;
+        for (String s : map.keySet()) {
+            if (!cfg.has(s)) {
+                updated = true;
+                cfg.set(s, map.get(s));
+            }
+        }
+        if (updated) {
+            cfg.trySave();
+        }
     }
 
     @Override
@@ -310,6 +346,7 @@ public class BCases extends JavaPlugin implements BCasesApi {
                             long nanos = System.nanoTime();
                             onDisable0();
                             HandlerList.unregisterAll(this);
+                            Bukkit.getScheduler().cancelTasks(this);
                             onLoad();
                             onEnable();
                             message.sendMsg(sender, "&a[✔] &fПлагин успешно перезагружен за {} ms.", TimeUnit.NANOSECONDS.toMillis(System.nanoTime() - nanos));
@@ -341,6 +378,11 @@ public class BCases extends JavaPlugin implements BCasesApi {
     @Override
     public MenuLoader getMenuLoader() {
         return menuLoader;
+    }
+
+    @Override
+    public TimeFormatter getTimeFormatter() {
+        return timeFormatter;
     }
 
     static {

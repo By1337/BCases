@@ -119,6 +119,7 @@ public class CreepersAnim extends AbstractAnimation {
             if (value instanceof VirtualLivingEntity livingEntity) {
                 livingEntity.setHealth(0);
                 livingEntity.broadcastEntityEvent(EntityEvent.DEATH);
+                playSound(livingEntity.getPos(), Sound.ENTITY_CREEPER_DEATH, 0.5f, 0.5f);
                 trackEntity(prizeSelector.getRandomPrize().createVirtualItem(livingEntity.getPos()));
             }
         });

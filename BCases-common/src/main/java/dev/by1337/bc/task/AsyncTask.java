@@ -66,9 +66,10 @@ public abstract class AsyncTask implements Runnable {
 
     public final void onStop() {
         synchronized (this) {
+            cancelled = true;
             notifyAll();
         }
-        if (onEnd != null){
+        if (onEnd != null) {
             onEnd.run();
         }
     }
@@ -78,12 +79,11 @@ public abstract class AsyncTask implements Runnable {
         run();
     }
 
-    public void join() throws InterruptedException{
-        if (cancelled) return;
+    public void join() throws InterruptedException {
         synchronized (this) {
+            if (cancelled) return;
             this.wait();
         }
-
     }
 
     public boolean shouldBeTick() {

@@ -1,9 +1,7 @@
 package dev.by1337.bc.animation;
 
 import dev.by1337.bc.CaseBlock;
-import dev.by1337.bc.animation.impl.CreepersAnim;
-import dev.by1337.bc.animation.impl.RandMobs;
-import dev.by1337.bc.animation.impl.SwordsAnim;
+import dev.by1337.bc.animation.impl.*;
 import dev.by1337.bc.prize.PrizeSelector;
 import dev.by1337.bc.yaml.CashedYamlContext;
 import org.bukkit.entity.Player;
@@ -16,6 +14,7 @@ public class AnimationRegistry extends SpacedNameRegistry<AnimationRegistry.Anim
     public static AnimationCreator RAND_MOBS = INSTANCE.register("default:rand_mobs", RandMobs::new);
     public static AnimationCreator SWORDS = INSTANCE.register("default:swords", SwordsAnim::new);
     public static AnimationCreator CREEPERS = INSTANCE.register("default:creepers", CreepersAnim::new);
+    public static AnimationCreator WHEEL = INSTANCE.register("default:wheel", WheelAnim::new);
 
     private AnimationRegistry() {
     }

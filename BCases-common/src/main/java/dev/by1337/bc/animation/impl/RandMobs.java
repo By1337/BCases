@@ -81,6 +81,7 @@ public class RandMobs extends AbstractAnimation {
         }
         clickedEntity.setHealth(0);
         clickedEntity.broadcastEntityEvent(EntityEvent.DEATH);
+        playSound(clickedEntity.getPos(), Sound.ENTITY_ZOMBIE_DEATH, 0.5f, 0.5f);
         spawnParticle(Particle.FLAME, clickedEntity.getPos(), 50, 0, 0, 0, 0.5);
         new AsyncTask() {
             final Vec3d pos = clickedEntity.getPos();
@@ -98,6 +99,7 @@ public class RandMobs extends AbstractAnimation {
             if (value instanceof VirtualLivingEntity livingEntity) {
                 livingEntity.setHealth(0);
                 livingEntity.broadcastEntityEvent(EntityEvent.DEATH);
+                playSound(livingEntity.getPos(), Sound.ENTITY_ZOMBIE_DEATH, 0.5f, 0.5f);
                 trackEntity(prizeSelector.getRandomPrize().createVirtualItem(livingEntity.getPos()));
             }
         });

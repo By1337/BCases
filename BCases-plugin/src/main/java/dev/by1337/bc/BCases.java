@@ -80,6 +80,7 @@ public class BCases extends JavaPlugin implements BCasesApi {
             ResourceUtil.saveIfNotExist("animations/randMobs.yml", this);
             ResourceUtil.saveIfNotExist("animations/swords.yml", this);
             ResourceUtil.saveIfNotExist("animations/creepers.yml", this);
+            ResourceUtil.saveIfNotExist("animations/wheel.yml", this);
         }
         if (!new File(getDataFolder(), "menu").exists()) {
             ResourceUtil.saveIfNotExist("menu/default.yml", this);

@@ -60,6 +60,10 @@ public class PrizeSelector {
         return selector.getRandomItem();
     }
 
+    public Prize getRandomPrize(double exponent) {
+        return selector.getRandomItem(exponent);
+    }
+
     public List<? extends WeightedItem<Prize>> prizes() {
         return prizes;
     }

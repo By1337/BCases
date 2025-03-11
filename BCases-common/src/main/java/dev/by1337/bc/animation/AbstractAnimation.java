@@ -11,11 +11,9 @@ import dev.by1337.bc.tracker.ViewerTracker;
 import dev.by1337.bc.util.AsyncCatcher;
 import dev.by1337.bc.util.ThrowingRunnable;
 import dev.by1337.bc.yaml.CashedYamlContext;
-import dev.by1337.virtualentity.api.util.PlayerHashSet;
 import dev.by1337.virtualentity.api.virtual.VirtualEntity;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.Sound;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.by1337.blib.chat.util.Message;
@@ -26,7 +24,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Random;
-import java.util.Set;
 import java.util.function.Consumer;
 
 public abstract class AbstractAnimation extends WorldUtil implements Animation {

@@ -79,7 +79,7 @@ public class CommandRegistry {
                             ItemStack itemStack = BLib.getApi().getItemStackSerialize().deserialize(item);
 
                             if (min > 0 && max > 0){
-                                if (min < max){
+                                if (min > max){
                                     throw new CommandException("{} не может быть меньше чем {}! Команда [GIVE] {} {} {}", max, min, itemStack, min, max);
                                 }
                                 Random random = new Random();

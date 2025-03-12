@@ -1,14 +1,14 @@
 blocks:
-  - block: end_portal_frame
-    world: world
-    on_click_menu: bcases:default
-    idle_animation: default:none # на выбор default:fireworks | default:none
-    pos:
+  - block: end_portal_frame # Материал кейса. Вы можете указать с блок датой minecraft:ender_chest[facing=north]
+    world: world # Мир в котором этот кейс находится
+    on_click_menu: bcases:default  # id меню которое будет открываться при клике по кейсу
+    idle_animation: default:none # анимация которая будет воспроизводится пока никто не открывает кейс. На выбор default:fireworks | default:none
+    pos: # Позиция кейса
       x: 0
       y: 100
       z: 0
-    hologram:
-      offsets:
+    hologram: # Голограмма
+      offsets: # Смещение голограммы относительно кейса
         x: 0.5
         y: 1.5
         z: 0.5

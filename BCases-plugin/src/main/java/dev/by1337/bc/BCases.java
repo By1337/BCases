@@ -135,7 +135,6 @@ public class BCases extends JavaPlugin implements BCasesApi {
     }
 
     private void loadDb() {
-
         String dbType = config.getAsString("database_type");
         if (dbType.equalsIgnoreCase("mariadb")) {
             loadMariaDbDriver();

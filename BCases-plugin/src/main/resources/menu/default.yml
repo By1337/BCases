@@ -1,8 +1,7 @@
-id: bcases:default
+id: bcases:default # Этот id используется при указании меню которое должно открываться при клике по кейсу в blocks.yml
 provider: bcases:case
 type: CHEST
 title: "&7Кейс"
-
 
 items:
   open:
@@ -15,18 +14,21 @@ items:
     material: CHEST
     on_click:
       requirements:
-        - check: '%bcases_keys_count_of_type_default% < 1'
+        # Первое условие
+        - check: '%bcases_keys_count_of_type_default% < 1' # Если у игрока default ключей меньше одного
           commands:
-            - '[MESSAGE] &cУ Вас не достаточно ключей!'
-            - '[BREAK]'
-        - check: '{playing} == true'
+            - '[MESSAGE] &cУ Вас не достаточно ключей!' # Пишем сообщение
+            - '[BREAK]' # Заканчиваем проверку условий
+
+        # Второе условие
+        - check: '{playing} == true' # Проверим запущена ли какая-то анимация у текущего кейса
           commands:
             - '[MESSAGE] &cКто-то уже открывает этот кейс!'
-            - '[CLOSE]'
-            - '[BREAK]'
-        - check: 'true == true'
-          commands:
-            - '[TAKE_KEY] default'
-            - '[PLAY] creepers default' # можно запустить конкретную анимацию по id
-          #  - '[PLAY] $random default'
-            - '[CLOSE]'
+            - '[CLOSE]' # Закроем меню
+            - '[BREAK]' # Закончим проверку условий
+          deny_commands:
+            - '[TAKE_KEY] default' # Забираем у игрока один default ключ
+            # - '[PLAY] creepers default' # можно запустить конкретную анимацию по id
+            - '[PLAY] $random default' # Запустим случайную анимацию с призами из default (см. prizes.yml)
+            - '[CLOSE]' # закроем меню
+

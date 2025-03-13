@@ -13,6 +13,7 @@ import dev.by1337.bc.hologram.HologramManager;
 import dev.by1337.bc.hook.papi.PapiHook;
 import dev.by1337.bc.menu.CaseDefaultMenu;
 import dev.by1337.bc.menu.KeyListMenu;
+import dev.by1337.bc.metrics.Metrics;
 import dev.by1337.bc.prize.PrizeMap;
 import dev.by1337.bc.util.LookingAtCaseBlockUtil;
 import dev.by1337.bc.util.TimeFormatter;
@@ -72,6 +73,7 @@ public class BCases extends JavaPlugin implements BCasesApi {
     private AddonLoader addonLoader;
     private TimeFormatter timeFormatter;
     private YamlConfig config;
+    private Metrics metrics;
 
     @Override
     public void onLoad() {
@@ -109,6 +111,9 @@ public class BCases extends JavaPlugin implements BCasesApi {
 
     @Override
     public void onEnable() {
+        if (metrics == null){
+            metrics = new Metrics(this, 25079);
+        }
         config = ResourceUtil.load("config.yml", this);
         timeFormatter = config.get("time-format").decode(TimeFormatter.CODEC).getOrThrow().getFirst();
         loadDb();
@@ -189,6 +194,7 @@ public class BCases extends JavaPlugin implements BCasesApi {
         } finally {
             IS_ENABLED_SETTER.accept(this, false);
         }
+        metrics.shutdown();
     }
 
     private void onDisable0() {

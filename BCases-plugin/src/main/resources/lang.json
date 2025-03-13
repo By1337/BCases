@@ -1,0 +1,42 @@
+{
+  "use-locale": "auto-detect",
+  "default-locale": "ru_RU",
+  "messages": {
+    "command.give.successfully": {
+      "ru_RU": "&a[✔] &fУспешно выдал игроку {} {} ключей от кейса {}",
+      "en_UK": "&a[✔] &fSuccessfully gave player {} {} crate keys for {}"
+    },
+    "command.give.successfully.offline": {
+      "ru_RU": "&a[✔] &fУспешно выдал &cофлайн&f игроку {} {} ключей от кейса {}",
+      "en_UK": "&a[✔] &fSuccessfully gave &coffline&f player {} {} crate keys for {}"
+    },
+    "command.take.successfully": {
+      "ru_RU": "&a[✔] &fУспешно удалил ключи {} в количестве {} у игрока {}",
+      "en_UK": "&a[✔] &fSuccessfully removed {} keys (amount: {}) from player {}"
+    },
+    "command.take.failed": {
+      "ru_RU": "&c[❌] &fНевозможно удалить ключи у оффлайн игрока!",
+      "en_UK": "&c[❌] &fCannot remove keys from an offline player!"
+    },
+    "command.remove.successfully": {
+      "ru_RU": "&a[✔] &fУспешно удалил блок на координатах {} {} {}",
+      "en_UK": "&a[✔] &fSuccessfully removed block at coordinates {} {} {}"
+    },
+    "command.set.successfully": {
+      "ru_RU": "&a[✔] &fУспешно установил кейс",
+      "en_UK": "&a[✔] &fSuccessfully set the crate"
+    },
+    "command.dump.req-item": {
+      "ru_RU": "&c[❌] &fУ Вас в руке должен быть предмет!",
+      "en_UK": "&c[❌] &fYou must hold an item in your hand!"
+    },
+    "command.reload.successfully": {
+      "ru_RU": "&a[✔] &fПлагин успешно перезагружен за {} ms.",
+      "en_UK": "&a[✔] &fPlugin successfully reloaded in {} ms."
+    },
+    "click-to-copy": {
+      "ru_RU": "Нажмите, чтобы скопировать",
+      "en_UK": "Click to copy"
+    }
+  }
+}

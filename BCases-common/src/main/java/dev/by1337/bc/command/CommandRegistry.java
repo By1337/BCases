@@ -81,7 +81,7 @@ public class CommandRegistry {
 
                             if (min > 0 && max > 0){
                                 if (min > max){
-                                    throw new CommandException("{} не может быть меньше чем {}! Команда [GIVE] {} {} {}", max, min, item, min, max);
+                                    throw new CommandException("{} cannot be less than {}! Command [GIVE] {} {} {}", max, min, item, min, max);
                                 }
                                 Random random = new Random();
                                 int amount = random.nextInt(max - min + 1) + min;

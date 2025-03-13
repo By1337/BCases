@@ -94,7 +94,12 @@ public class BCases extends JavaPlugin implements BCasesApi {
             BLib.getApi().getUnsafe().getPluginClasspathUtil().addUrl(this, cp.toFile());
         }
 
-        message = new Message(getLogger());
+        try (var in = Objects.requireNonNull(getResource("lang.json"))) {
+            message = new Message(getLogger(), new InputStreamReader(in));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
         menuLoader = new MenuLoader(new File(getDataFolder(), "menu"), this);
         menuLoader.getRegistry().register(new SpacedNameKey("bcases:case"), CaseDefaultMenu::new);
         menuLoader.getRegistry().register(new SpacedNameKey("bcases:key_list"), KeyListMenu::new);
@@ -128,7 +133,7 @@ public class BCases extends JavaPlugin implements BCasesApi {
         animationLoader = new AnimationLoader(this);
         animationLoader.load();
 
-        commandWrapper = new CommandWrapper(createCommand(), this); // обязательно после загрузки анимаций
+        commandWrapper = new CommandWrapper(createCommand(), this);
         commandWrapper.setPermission("bcases.admin");
         commandWrapper.register();
 
@@ -232,9 +237,9 @@ public class BCases extends JavaPlugin implements BCasesApi {
                             }
                             if (sender instanceof Player) {
                                 if (player instanceof Player pl) {
-                                    message.sendMsg(sender, "&a[✔] &fУспешно выдал игроку {} {} ключей от кейса {}", pl.getName(), count, keyId);
+                                    message.sendTranslatable(sender, "command.give.successfully", pl.getName(), count, keyId);
                                 } else {
-                                    message.sendMsg(sender, "&a[✔] &fУспешно выдал &cофлайн&f игроку {} {} ключей от кейса {}", player, count, keyId);
+                                    message.sendTranslatable(sender, "command.give.successfully.offline", player, count, keyId);
                                 }
 
                             }
@@ -263,10 +268,10 @@ public class BCases extends JavaPlugin implements BCasesApi {
                                     user.removeKey(keys.get(i));
                                 }
                                 if (sender instanceof Player) {
-                                    message.sendMsg(sender, "&a[✔] &fУспешно удалил ключи {} в количестве {} у игрока {}", keyId, removed, pl.getName());
+                                    message.sendTranslatable(sender, "command.take.successfully", keyId, removed, pl.getName());
                                 }
                             } else {
-                                message.sendMsg(sender, "&c[❌] &fНевозможно удалить ключи у оффлайн игрока!");
+                                message.sendTranslatable(sender, "command.take.failed");
                             }
 
                         }))
@@ -280,7 +285,7 @@ public class BCases extends JavaPlugin implements BCasesApi {
                             if (block == null) throw new CommandException("Block not found!");
                             blockManager.removeBlock(block);
                             blockManager.saveConfig();
-                            message.sendMsg(sender, "&a[✔] &fУспешно удалил блок на координатах {} {} {}", block.pos().x, block.pos().y, block.pos().z);
+                            message.sendTranslatable(sender, "command.remove.successfully", block.pos().x, block.pos().y, block.pos().z);
                         }))
                 )
                 .addSubCommand(new Command<CommandSender>("set")
@@ -298,13 +303,13 @@ public class BCases extends JavaPlugin implements BCasesApi {
                                     menuLoader.getMenus().iterator().next().toString(),
                                     new HologramManager.Config(
                                             new Vec3d(0.5, 1.5, 0.5),
-                                            List.of("&dКейсы", "&fНажми, чтобы открыть", "&bКлючей: %bcases_keys_count_of_type_default%")
+                                            List.of("&fClick to copy", "&bKeys: %bcases_keys_count_of_type_default%")
                                     ),
                                     "default:none"
                             );
                             blockManager.addBlock(caseBlock);
                             blockManager.saveConfig();
-                            message.sendMsg(sender, "&a[✔] &fУспешно установил кейс");
+                            message.sendMsg(sender, "command.set.successfully");
                         }))
                 )
 
@@ -330,12 +335,14 @@ public class BCases extends JavaPlugin implements BCasesApi {
                             Player player = (Player) sender;
                             ItemStack itemStack = player.getInventory().getItemInMainHand();
                             if (itemStack.getType().isAir()) {
-                                message.sendMsg(sender, "&c[❌] &fУ Вас в руке должен быть предмет!");
+                                message.sendTranslatable(sender, "command.dump.req-item");
                             }
                             String item = BLib.getApi().getItemStackSerialize().serialize(itemStack);
                             player.sendMessage(
                                     Component.text(item)
-                                            .hoverEvent(HoverEvent.hoverEvent(HoverEvent.Action.SHOW_TEXT, Component.text("Нажмите, чтобы скопировать")))
+                                            .hoverEvent(HoverEvent.hoverEvent(HoverEvent.Action.SHOW_TEXT,
+                                                    message.getTranslation().translate(Component.translatable("click-to-copy"), player.locale(), player)
+                                            ))
                                             .clickEvent(ClickEvent.copyToClipboard(item))
                             );
                         }))
@@ -349,7 +356,7 @@ public class BCases extends JavaPlugin implements BCasesApi {
                             Bukkit.getScheduler().cancelTasks(this);
                             onLoad();
                             onEnable();
-                            message.sendMsg(sender, "&a[✔] &fПлагин успешно перезагружен за {} ms.", TimeUnit.NANOSECONDS.toMillis(System.nanoTime() - nanos));
+                            message.sendTranslatable(sender, "command.reload.successfully", TimeUnit.NANOSECONDS.toMillis(System.nanoTime() - nanos));
                         }))
                 )
                 ;

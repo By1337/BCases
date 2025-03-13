@@ -6,7 +6,6 @@ import org.bukkit.event.player.PlayerInteractEvent;
 
 public interface Animation {
     void play();
-    // принудительно завершаем анимацию
     void forceStop();
     @SyncOnly
     boolean onClick(int intId, Player clicker);

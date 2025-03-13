@@ -62,9 +62,10 @@ public class WheelAnim extends AbstractAnimation {
 
         openChest();
         var particleTask = new AsyncTask() {
+            final Vec3d pos = center.add(0, 0.8, 0);
             @Override
             public void run() {
-                spawnParticle(Particle.SPELL_WITCH, 0, 0.8, 0, 10, 0.15, 0.2, 0.15);
+                spawnParticle(Particle.SPELL_WITCH, pos, 10, 0.15, 0.2, 0.15);
             }
         }.timer().delay(2).start(this);
 

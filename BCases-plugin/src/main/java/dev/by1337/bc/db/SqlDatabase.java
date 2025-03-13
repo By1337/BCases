@@ -124,7 +124,7 @@ public class SqlDatabase implements Database, Listener {
                 preparedStatement.execute();
             }
         } catch (SQLException e) {
-            LOGGER.error("Не удалось создать таблицу!", e);
+            LOGGER.error("Failed to create the table!", e);
             throw new RuntimeException(e);
         }
     }

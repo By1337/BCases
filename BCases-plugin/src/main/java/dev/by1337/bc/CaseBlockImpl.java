@@ -65,7 +65,7 @@ public class CaseBlockImpl extends Placeholder implements CaseBlock, Closeable {
         this.pos = pos;
         this.onClickMenu = onClickMenu;
         this.idleAnimationId = idleAnimationId;
-        plugin = (BCases) ((PluginClassLoader) this.getClass().getClassLoader()).getPlugin(); // todo не используй ебаные костыли
+        plugin = (BCases) ((PluginClassLoader) this.getClass().getClassLoader()).getPlugin(); // todo
         registerPlaceholder("{playing}", () -> animation != null);
         hologramManager = new HologramManager(worldGetter, pos, plugin, config);
         idleAnimation = Objects.requireNonNull(IdleAnimationRegistry.INSTANCE.lookup(idleAnimationId), "Unknown idle animation " + idleAnimationId).create(this);

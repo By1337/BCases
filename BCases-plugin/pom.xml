@@ -62,6 +62,33 @@
                     </execution>
                 </executions>
             </plugin>
+            <plugin>
+                <groupId>org.by1337.plugin.lang</groupId>
+                <artifactId>lang-plugin</artifactId>
+                <version>1.0</version>
+                <configuration>
+                    <packageList>
+                        <resource>
+                            <dir>ru/</dir>
+                            <relocate>/</relocate>
+                            <output>${artifactId}-${version}-ru.jar</output>
+                        </resource>
+                        <resource>
+                            <dir>en/</dir>
+                            <relocate>/</relocate>
+                            <output>${artifactId}-${version}-en.jar</output>
+                        </resource>
+                    </packageList>
+                </configuration>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>package</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
         </plugins>
         <resources>
             <resource>

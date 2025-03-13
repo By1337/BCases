@@ -1,0 +1,36 @@
+blocks:
+  - block: end_portal_frame # Case material. You can specify with block data, e.g., minecraft:ender_chest[facing=north]
+    world: world # The world where this case is located
+    on_click_menu: bcases:default  # ID of the menu that will open when clicking on the case
+    idle_animation: default:none # Animation that plays when no one is opening the case. Options: default:fireworks | default:none
+    pos: # Case position
+      x: 0
+      y: 100
+      z: 0
+    hologram: # Hologram
+      offsets: # Hologram offset relative to the case
+        x: 0.5
+        y: 1.5
+        z: 0.5
+      lines:
+        - '&dCases'
+        - '&fClick to open'
+        - '&bKeys: %bcases_keys_count_of_type_default%'
+
+  - block: end_portal_frame
+    world: world
+    on_click_menu: bcases:key_list
+    idle_animation: default:fireworks
+    pos:
+      x: 5
+      y: 100
+      z: 0
+    hologram:
+      offsets:
+        x: 0.5
+        y: 1.5
+        z: 0.5
+      lines:
+        - '&dCases'
+        - '&fClick to open'
+        - '&bKeys: %bcases_keys_count%'

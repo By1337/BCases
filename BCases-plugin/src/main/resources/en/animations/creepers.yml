@@ -1,0 +1,34 @@
+provider: default:creepers
+id: creepers
+
+settings:
+  title: '&cHit the Creeper!'
+  spawn_delay: 150
+  click_wait: 10000
+  idle: 6000
+  before_end: 4000
+  mobs_positions:
+    - x: 1
+      y: 0
+      z: 3
+    - x: 0
+      y: 0
+      z: 3
+    - x: -2
+      y: 0
+      z: 1
+    - x: -2
+      y: 0
+      z: 0
+    - x: 0
+      y: 0
+      z: -2
+    - x: 1
+      y: 0
+      z: -2
+    - x: 3
+      y: 0
+      z: 0
+    - x: 3
+      y: 0
+      z: 1

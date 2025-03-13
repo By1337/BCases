@@ -1,0 +1,143 @@
+id: bcases:key_list
+provider: bcases:key_list
+type: CHEST
+size: 54
+title: "&7Crates"
+
+data-slots: 10-16,19-25,28-34,37-43
+
+defaults:
+  lore: &lore
+    - '&eClick &fto open'
+    - '&fReceived: &6{issue_date}'
+    - '&fExpires: &6{removal_date}'
+
+expired:
+  display_name: '&cThis key is expired :('
+  material: barrier
+  static: true
+
+crates:
+  default:
+    display_name: '&6Common Crate'
+    lore: *lore
+    material: gray_shulker_box
+    ticking: true
+    tick-speed: 20
+    on_click:
+      requirements:
+        - check: '{playing} == true'
+          commands:
+            - '[MESSAGE] &cSomeone is already opening this crate!'
+            - '[CLOSE]'
+          deny_commands:
+            - '[TAKE_THIS_KEY]'
+            - '[PLAY] $random default'
+            - '[CLOSE]'
+
+items:
+  next:
+    material: TIPPED_ARROW
+    all_flags: true
+    slot: 50
+    display_name: '&aNext Page'
+    static: true
+    color: '#B5E61D'
+    on_click:
+      commands:
+        - '[SET_ANIMATION] left_to_right'
+        - '[ANIMATION_TICK]'
+        - '[NEXT_PAGE]'
+        - '[REFRESH]'
+
+  next-1:
+    priority: 1
+    material: TIPPED_ARROW
+    all_flags: true
+    slot: 50
+    color: '#7F7F7F'
+    display_name: '&aNext Page'
+    view_requirement:
+      requirements:
+        - check: '{current_page} == {max_page}'
+
+  back-1:
+    material: TIPPED_ARROW
+    all_flags: true
+    slot: 48
+    color: '#B5E61D'
+    display_name: '&aPrevious Page'
+    on_click:
+      commands:
+        - '[SET_ANIMATION] right_to_left'
+        - '[ANIMATION_TICK]'
+        - '[PREVIOUS_PAGE]'
+        - '[REFRESH]'
+    static: true
+
+  back:
+    priority: 1
+    material: TIPPED_ARROW
+    all_flags: true
+    slot: 48
+    color: '#7F7F7F'
+    display_name: '&aPrevious Page'
+    view_requirement:
+      requirements:
+        - check: '{current_page} == 1'
+
+
+animations:
+  left_to_right:
+    - tick: 0
+      opcodes:
+        - cfb: 10-16,19-25,28-34,37-43
+        - sie: air 10-16,19-25,28-34,37-43
+    - tick: 1
+      opcodes:
+        - rm: 16,25,34,43
+    - tick: 2
+      opcodes:
+        - rm: 15,24,33,42
+    - tick: 3
+      opcodes:
+        - rm: 14,23,32,41
+    - tick: 4
+      opcodes:
+        - rm: 13,22,31,40
+    - tick: 5
+      opcodes:
+        - rm: 12,21,30,39
+    - tick: 6
+      opcodes:
+        - rm: 11,20,29,38
+    - tick: 7
+      opcodes:
+        - rm: 10,19,28,37
+
+  right_to_left:
+    - tick: 0
+      opcodes:
+        - cfb: 10-16,19-25,28-34,37-43
+        - sie: air 10-16,19-25,28-34,37-43
+    - tick: 1
+      opcodes:
+        - rm: 10,19,28,37
+    - tick: 2
+      opcodes:
+        - rm: 11,20,29,38
+    - tick: 3
+      opcodes:
+        - rm: 12,21,30,39
+    - tick: 4
+      opcodes:
+        - rm: 13,22,31,40
+    - tick: 5
+      opcodes:
+        - rm: 14,23,32,41
+    - tick: 6
+      opcodes:
+        - rm: 15,24,33,42
+    - tick: 7
+      opcodes:
+        - rm: 16,25,34,43

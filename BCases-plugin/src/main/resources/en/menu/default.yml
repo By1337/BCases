@@ -1,0 +1,33 @@
+id: bcases:default # This ID is used to specify the menu that should open when clicking on a case in blocks.yml
+provider: bcases:case
+type: CHEST
+title: "&7Crate"
+
+items:
+  open:
+    slot: 22
+    display_name: " &#ff7000&l▶ Open Crate"
+    lore:
+      - ""
+      - " &#ff7000• &fCrate count: &#ff7000%bcases_keys_count_of_type_default%"
+      - ""
+    material: CHEST
+    on_click:
+      requirements:
+        # First condition
+        - check: '%bcases_keys_count_of_type_default% < 1' # If the player has less than one default key
+          commands:
+            - '[MESSAGE] &cYou do not have enough keys!' # Send a message
+            - '[BREAK]' # Stop checking conditions
+
+        # Second condition
+        - check: '{playing} == true' # Check if an animation is already running for this crate
+          commands:
+            - '[MESSAGE] &cSomeone is already opening this crate!'
+            - '[CLOSE]' # Close the menu
+            - '[BREAK]' # Stop checking conditions
+          deny_commands:
+            - '[TAKE_KEY] default' # Take one default key from the player
+            # - '[PLAY] creepers default' # You can start a specific animation by ID
+            - '[PLAY] $random default' # Start a random animation with rewards from default (see prizes.yml)
+            - '[CLOSE]' # Close the menu

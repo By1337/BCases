@@ -1,0 +1,31 @@
+provider: default:swords
+id: swords
+
+
+settings:
+  title: '&cChoose a stone!'
+  block_positions:
+    - x: 1
+      y: 0
+      z: 3
+    - x: -1
+      y: 0
+      z: 3
+    - x: -3
+      y: 0
+      z: 1
+    - x: -3
+      y: 0
+      z: -1
+    - x: -1
+      y: 0
+      z: -3
+    - x: 1
+      y: 0
+      z: -3
+    - x: 3
+      y: 0
+      z: -1
+    - x: 3
+      y: 0
+      z: 1

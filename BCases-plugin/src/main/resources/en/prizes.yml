@@ -1,0 +1,69 @@
+# Commands
+# [TAKE_KEY] <key> - take one specified key from the player
+# [PLAY] <animation> <prizes> - start animation
+# [MESSAGE] <msg> - send a message to the player
+# [BROADCAST] <msg> - send a message to all players on the server
+# [CONSOLE] <cmd> - execute a command from the console
+# [GIVE] <item base64> <?min> <?max> - give an item to the player. To get an item in base64 format, use the command /bcases dump
+# [TITLE] <"Title\nSubTitle"> <?fadeIn> <?stay> <?fadeOut> - send a title message to the player
+# [ACTION_BAR] <msg> - send an action bar message to the player
+
+prizes:
+  default: # Prize set "default"
+    # First prize
+    - chance: 100.0 # "Weight" - chance of appearing
+      enchanted: false # Enchantment effect
+      material: stone # Material
+      give_commands: # Prize commands
+        - '[MESSAGE] &r'
+        - '[MESSAGE] &7Common crate'
+        - '[MESSAGE] &fReward: &7Stone'
+        - '[MESSAGE] &r'
+        - '[CONSOLE] minecraft:give %player_name% stone'
+      display_name: '&7Stone'
+    #
+    # Second prize
+    - chance: 50
+      enchanted: false
+      material: netherite_scrap
+      give_commands:
+        - '[MESSAGE] &r'
+        - '[MESSAGE] &7Common crate'
+        - '[MESSAGE] &fReward: &6Netherite Scrap'
+        - '[MESSAGE] &r'
+        - '[CONSOLE] minecraft:give %player_name% netherite_scrap'
+      display_name: '&6Netherite Scrap'
+    #
+    # This is a prize with a list of possible rewards
+    - chance: 30
+      items:
+        - chance: 75
+          enchanted: false
+          material: diamond_pickaxe
+          give_commands:
+            - '[MESSAGE] &r'
+            - '[MESSAGE] &7Common crate'
+            - '[MESSAGE] &fReward: &bDiamond Pickaxe'
+            - '[MESSAGE] &r'
+            - '[CONSOLE] minecraft:give %player_name% diamond_pickaxe'
+          display_name: '&bDiamond Pickaxe'
+        - chance: 20
+          enchanted: true
+          material: diamond_pickaxe
+          give_commands:
+            - '[MESSAGE] &r'
+            - '[MESSAGE] &7Common crate'
+            - '[MESSAGE] &fReward: &dDiamond Pickaxe &7[Eff5]'
+            - '[MESSAGE] &r'
+            - '[CONSOLE] minecraft:give %player_name% minecraft:diamond_pickaxe{Enchantments:[{id:"minecraft:efficiency",lvl:5}]}'
+          display_name: '&dDiamond Pickaxe &7[Eff5]'
+        - chance: 5
+          enchanted: true
+          material: diamond_pickaxe
+          give_commands:
+            - '[MESSAGE] &r'
+            - '[MESSAGE] &7Common crate'
+            - '[MESSAGE] &fReward: &dDiamond Pickaxe &7[Eff10]'
+            - '[MESSAGE] &r'
+            - '[CONSOLE] minecraft:give %player_name% minecraft:diamond_pickaxe{Enchantments:[{id:"minecraft:efficiency",lvl:10}]}'
+          display_name: '&dDiamond Pickaxe &7[Eff10]'

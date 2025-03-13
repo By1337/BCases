@@ -1,0 +1,18 @@
+provider: default:wheel
+id: wheel
+
+settings:
+  prize_count: 8 # Number of prizes in the animation
+  radius: 1.5 # Circle radius
+  offsets: # Offset of the circle center
+    x: 0
+    y: -0.5
+    z: 0
+  max_speed: 15 # Maximum rotation speed
+  speed_fade: 0.07 # How much speed decreases each tick
+  min_speed: 2 # Minimum rotation speed
+  remove_speed: 5 # Speed at which prizes return to base
+  # The lower the number, the more valuable prizes will be shown to the player in the animation.
+  # This does not affect what the player actually receives.
+  fake_prize_exponent: 0.5
+  type: X # Axis to rotate prizes around (X or Z)

@@ -1,0 +1,38 @@
+provider: default:rand_mobs
+id: random_mobs
+
+settings:
+  title: '&cHit the mob!'
+  spawn_delay: 150 # Mobs will spawn sequentially with a delay of 150ms
+  click_wait: 10000 # The player has 10 seconds to choose a mob
+  idle: 3000 # After selecting a mob, there will be a 3-second pause before the others die
+  before_end: 4000 # After all mobs die, the animation will end in 4 seconds
+  mobs:
+    - ZOMBIE
+    - DROWNED
+    - ZOMBIE_VILLAGER
+  mobs_positions: # Coordinates relative to the center where mobs will spawn
+    - x: 1
+      y: 0
+      z: 3
+    - x: 0
+      y: 0
+      z: 3
+    - x: -2
+      y: 0
+      z: 1
+    - x: -2
+      y: 0
+      z: 0
+    - x: 0
+      y: 0
+      z: -2
+    - x: 1
+      y: 0
+      z: -2
+    - x: 3
+      y: 0
+      z: 0
+    - x: 3
+      y: 0
+      z: 1

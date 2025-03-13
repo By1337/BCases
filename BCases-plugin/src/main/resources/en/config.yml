@@ -1,0 +1,43 @@
+database_type: memory # memory | mysql | mariadb
+database:
+  user: "root"
+  password: "rootpassword"
+  maxPoolSize: 5
+  url: 'jdbc:mariadb://localhost:7876/bcases'
+  #url: 'jdbc:mysql://localhost:3306/bcases' # if you use MySQL, use this URL instead
+
+time-format:
+  ago: 'ago'
+  in: 'in'
+  just-now: 'Just now'
+  formats:
+    years: '%years% %months%'
+    months: '%months% %days%'
+    days: '%days% %hours%'
+    hours: '%hours% %minutes%'
+    minutes: '%minutes% %seconds%'
+    seconds: '%seconds%'
+  years:
+    form-1: 'year'
+    form-2: 'years'
+    form-5: 'years'
+  months:
+    form-1: 'month'
+    form-2: 'months'
+    form-5: 'months'
+  days:
+    form-1: 'day'
+    form-2: 'days'
+    form-5: 'days'
+  hours:
+    form-1: 'hour'
+    form-2: 'hours'
+    form-5: 'hours'
+  minutes:
+    form-1: 'minute'
+    form-2: 'minutes'
+    form-5: 'minutes'
+  seconds:
+    form-1: 'second'
+    form-2: 'seconds'
+    form-5: 'seconds'

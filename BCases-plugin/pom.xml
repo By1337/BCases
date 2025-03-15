@@ -63,6 +63,18 @@
                 </executions>
             </plugin>
             <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>3.2.0</version>
+                <configuration>
+                    <archive>
+                        <manifestEntries>
+                            <paperweight-mappings-namespace>mojang</paperweight-mappings-namespace>
+                        </manifestEntries>
+                    </archive>
+                </configuration>
+            </plugin>
+            <plugin>
                 <groupId>org.by1337.plugin.lang</groupId>
                 <artifactId>lang-plugin</artifactId>
                 <version>1.0</version>
@@ -159,7 +171,13 @@
         <dependency>
             <groupId>dev.by1337.virtualentity.api</groupId>
             <artifactId>VirtualEntityApi-api</artifactId>
-            <version>1.2</version>
+            <version>1.2.1</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>dev.by1337.virtualentity.core</groupId>
+            <artifactId>VirtualEntityApi</artifactId>
+            <version>1.2.1</version>
             <scope>provided</scope>
         </dependency>
         <dependency>

@@ -15,6 +15,7 @@ import dev.by1337.bc.menu.CaseDefaultMenu;
 import dev.by1337.bc.menu.KeyListMenu;
 import dev.by1337.bc.metrics.Metrics;
 import dev.by1337.bc.prize.PrizeMap;
+import dev.by1337.bc.util.LibLoader;
 import dev.by1337.bc.util.LookingAtCaseBlockUtil;
 import dev.by1337.bc.util.TimeFormatter;
 import dev.by1337.bc.util.TimeParser;
@@ -51,6 +52,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.lang.reflect.Field;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
@@ -89,15 +91,10 @@ public class BCases extends JavaPlugin implements BCasesApi {
             ResourceUtil.saveIfNotExist("menu/keylist.yml", this);
         }
 
-        try {
-            Class.forName("com.zaxxer.hikari.HikariConfig");
-        } catch (Throwable t) {
-            Path cp = RepositoryUtil.downloadIfNotExist("https://repo1.maven.org/maven2", "com.zaxxer", "HikariCP", "5.1.0", new File(getDataFolder(), "libraries").toPath());
-            BLib.getApi().getUnsafe().getPluginClasspathUtil().addUrl(this, cp.toFile());
-        }
+        LibLoader.load(this);
 
         try (var in = Objects.requireNonNull(getResource("lang.json"))) {
-            message = new Message(getLogger(), new InputStreamReader(in));
+            message = new Message(getLogger(), new InputStreamReader(in, StandardCharsets.UTF_8));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -315,7 +312,7 @@ public class BCases extends JavaPlugin implements BCasesApi {
                             );
                             blockManager.addBlock(caseBlock);
                             blockManager.saveConfig();
-                            message.sendMsg(sender, "command.set.successfully");
+                            message.sendTranslatable(sender, "command.set.successfully");
                         }))
                 )
 
@@ -342,6 +339,7 @@ public class BCases extends JavaPlugin implements BCasesApi {
                             ItemStack itemStack = player.getInventory().getItemInMainHand();
                             if (itemStack.getType().isAir()) {
                                 message.sendTranslatable(sender, "command.dump.req-item");
+                                return;
                             }
                             String item = BLib.getApi().getItemStackSerialize().serialize(itemStack);
                             player.sendMessage(

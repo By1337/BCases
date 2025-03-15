@@ -13,6 +13,7 @@ import org.by1337.blib.chat.placeholder.Placeholder;
 import org.by1337.blib.geom.Vec3d;
 import org.by1337.blib.random.WeightedItem;
 import org.by1337.bmenu.hook.ItemStackCreator;
+import org.jetbrains.annotations.Contract;
 
 import java.util.List;
 import java.util.Locale;
@@ -63,7 +64,7 @@ public class Prize extends Placeholder implements WeightedItem<Prize> {
     public VirtualItem createVirtualItem(Vec3d pos){
         VirtualItem item = VirtualItem.create();
         item.setPos(pos);
-        item.setItem(itemStack);
+        item.setItem(itemStack());
         item.setCustomNameVisible(true);
         item.setCustomName(displayNameComponent);
         item.setNoGravity(true);
@@ -129,8 +130,9 @@ public class Prize extends Placeholder implements WeightedItem<Prize> {
         this.displayNameComponent = displayNameComponent;
     }
 
+    @Contract(value = " -> new", pure = true)
     public ItemStack itemStack() {
-        return itemStack;
+        return itemStack.clone();
     }
 
     public void setItemStack(ItemStack itemStack) {

@@ -3,6 +3,7 @@ package dev.by1337.bc.bd;
 import blib.com.mojang.serialization.Codec;
 import blib.com.mojang.serialization.codecs.RecordCodecBuilder;
 import org.by1337.blib.configuration.serialization.DefaultCodecs;
+import org.jetbrains.annotations.ApiStatus;
 
 import java.util.*;
 import java.util.stream.IntStream;
@@ -21,8 +22,8 @@ public class User {
     private int keysCount;
 
     public User(String lastKnownName, UUID uuid, Database database, Map<String, List<CaseKey>> keys) {
-        this.lastKnownName = lastKnownName;
-        this.uuid = uuid;
+        this.lastKnownName = Objects.requireNonNullElse(lastKnownName, "unknown");
+        this.uuid = Objects.requireNonNullElse(uuid, UUID.randomUUID());
         this.database = database;
         this.keys = keys;
         keysCount = keys.values().stream().flatMapToInt(list -> IntStream.of(list.size())).sum();
@@ -49,6 +50,7 @@ public class User {
         }
     }
 
+    @ApiStatus.Internal
     public void setDatabase(Database database) {
         this.database = database;
     }

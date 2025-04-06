@@ -171,13 +171,13 @@
         <dependency>
             <groupId>dev.by1337.virtualentity.api</groupId>
             <artifactId>VirtualEntityApi-api</artifactId>
-            <version>1.2.1</version>
+            <version>1.2.2</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>dev.by1337.virtualentity.core</groupId>
             <artifactId>VirtualEntityApi</artifactId>
-            <version>1.2.1</version>
+            <version>1.2.2</version>
             <scope>provided</scope>
         </dependency>
         <dependency>

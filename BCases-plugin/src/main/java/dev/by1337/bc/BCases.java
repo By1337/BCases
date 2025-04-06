@@ -7,6 +7,7 @@ import dev.by1337.bc.animation.AnimationLoader;
 import dev.by1337.bc.bd.CaseKey;
 import dev.by1337.bc.bd.Database;
 import dev.by1337.bc.bd.User;
+import dev.by1337.bc.db.FileDatabase;
 import dev.by1337.bc.db.MemoryDatabase;
 import dev.by1337.bc.db.SqlDatabase;
 import dev.by1337.bc.hologram.HologramManager;
@@ -108,7 +109,7 @@ public class BCases extends JavaPlugin implements BCasesApi {
 
     @Override
     public void onEnable() {
-        if (metrics == null){
+        if (metrics == null) {
             metrics = new Metrics(this, 25079);
         }
         config = ResourceUtil.load("config.yml", this);
@@ -150,6 +151,8 @@ public class BCases extends JavaPlugin implements BCasesApi {
             database = new SqlDatabase(config.get("database").decode(SqlDatabase.Config.CODEC).getOrThrow().getFirst(), this);
         } else if (dbType.equalsIgnoreCase("memory")) {
             database = new MemoryDatabase();
+        } else if (dbType.equalsIgnoreCase("file")) {
+            database = new FileDatabase(this);
         } else {
             getSLF4JLogger().error("Unknown db type {}", dbType);
             database = new MemoryDatabase();

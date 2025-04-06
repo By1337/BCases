@@ -28,7 +28,6 @@ public class PrizeMapTest {
 
         Assert.assertEquals(prizeMap, decoded);
 
-
     }
 
     private Prize createPrize() {

@@ -30,10 +30,10 @@ public class LibLoader {
         }
         if (!hasClass("dev.by1337.virtualentity.api.VirtualEntityFactory")) {
             Path cp = downloadFromGitHub(
-                    "https://github.com/By1337/VirtualEntityApi/releases/download/1.2.1/VirtualEntityApi-1.2.1.jar",
+                    "https://github.com/By1337/VirtualEntityApi/releases/download/1.2.2/VirtualEntityApi-1.2.2.jar",
                     "dev.by1337.virtualentity.core",
                     "VirtualEntityApi",
-                    "1.2.1",
+                    "1.2.2",
                     libraries
             );
             BLib.getApi().getUnsafe().getPluginClasspathUtil().addUrl(plugin, cp.toFile());

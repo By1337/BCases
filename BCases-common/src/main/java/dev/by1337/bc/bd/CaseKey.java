@@ -6,6 +6,8 @@ import dev.by1337.bc.BCasesApi;
 import org.by1337.blib.chat.placeholder.Placeholder;
 import org.jetbrains.annotations.ApiStatus;
 
+import java.util.List;
+
 public class CaseKey extends Placeholder {
     public static final Codec<CaseKey> CODEC = RecordCodecBuilder.create(instance -> instance.group(
             Codec.STRING.fieldOf("id").forGetter(CaseKey::id),
@@ -13,6 +15,7 @@ public class CaseKey extends Placeholder {
             Codec.LONG.fieldOf("removal_date").forGetter(CaseKey::removalDate)
     ).apply(instance, CaseKey::new));
 
+    public static final Codec<List<CaseKey>> LIST_CODEC = CODEC.listOf();
     private final String id;
     private final long issueDate;
     private final long removalDate;

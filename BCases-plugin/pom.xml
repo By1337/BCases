@@ -4,7 +4,7 @@
     <parent>
         <groupId>dev.by1337.bc</groupId>
         <artifactId>BCases-parent</artifactId>
-        <version>1.0</version>
+        <version>1.1</version>
     </parent>
     <artifactId>BCases</artifactId>
 
@@ -148,7 +148,7 @@
         <dependency>
             <groupId>dev.by1337.bc</groupId>
             <artifactId>BCases-common</artifactId>
-            <version>1.0</version>
+            <version>1.1</version>
         </dependency>
         <dependency>
             <groupId>com.destroystokyo.paper</groupId>
@@ -177,7 +177,7 @@
         <dependency>
             <groupId>dev.by1337.virtualentity.core</groupId>
             <artifactId>VirtualEntityApi</artifactId>
-            <version>1.2.2</version>
+            <version>1.2.3</version>
             <scope>provided</scope>
         </dependency>
         <dependency>

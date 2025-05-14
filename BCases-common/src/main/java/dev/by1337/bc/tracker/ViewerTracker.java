@@ -124,6 +124,7 @@ public class ViewerTracker {
         lock.lock();
         try {
             entities.put(entity.getId(), entity);
+            entity.tick(players);
         } finally {
             lock.unlock();
         }

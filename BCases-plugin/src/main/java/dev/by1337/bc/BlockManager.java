@@ -86,9 +86,9 @@ public class BlockManager implements Listener, Closeable {
         int entityId = event.getEntityId();
         Player player = event.getPlayer();
         for (CaseBlockImpl caseBlock : blockList) {
-            if (caseBlock.onUseUnknownEntity(entityId, player)) {
-                return;
-            }
+            var anim = caseBlock.animation();
+            if (anim != null && !anim.getPlayer().equals(player)) continue;
+            caseBlock.onUseUnknownEntity(entityId, player);
         }
     }
 
@@ -103,7 +103,6 @@ public class BlockManager implements Listener, Closeable {
                 var anim = caseBlock.animation();
                 if (anim == null || !anim.getPlayer().equals(player)) continue;
                 anim.onInteract(event);
-                return;
             }
             return;
         }

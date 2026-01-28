@@ -233,21 +233,32 @@ public class BCases extends JavaPlugin implements BCasesApi {
                             int count = (int) args.getOrDefault("count", 1);
                             long duration = TimeParser.parse((String) args.getOrDefault("duration", "10y"));
 
-                            for (int i = 0; i < count; i++) {
-                                CaseKey key = new CaseKey(keyId, System.currentTimeMillis(), System.currentTimeMillis() + duration);
-                                if (player instanceof Player pl) {
-                                    database.getUser(pl).addKey(key);
-                                } else {
-                                    database.addKeyIntoDb(key, String.valueOf(player), null);
+                            List<Player> targets = new ArrayList<>();
+
+                            if ("*".equals(player)) {
+                                targets.addAll(Bukkit.getOnlinePlayers());
+                            } else if (player instanceof Player) {
+                                targets.add((Player) player);
+                            } else {
+                                String name = (String) player;
+                                for (int i = 0; i < count; i++) {
+                                    CaseKey key = new CaseKey(keyId, System.currentTimeMillis(), System.currentTimeMillis() + duration);
+                                    database.addKeyIntoDb(key, name, null);
+                                }
+                                if (sender instanceof Player) {
+                                    message.sendTranslatable(sender, "command.give.successfully.offline", name, count, keyId);
+                                }
+                                return;
+                            }
+                            for (Player target : targets) {
+                                for (int i = 0; i < count; i++) {
+                                    CaseKey key = new CaseKey(keyId, System.currentTimeMillis(), System.currentTimeMillis() + duration);
+                                    database.getUser(target).addKey(key);
                                 }
                             }
-                            if (sender instanceof Player) {
-                                if (player instanceof Player pl) {
-                                    message.sendTranslatable(sender, "command.give.successfully", pl.getName(), count, keyId);
-                                } else {
-                                    message.sendTranslatable(sender, "command.give.successfully.offline", player, count, keyId);
-                                }
 
+                            if (!targets.isEmpty() && sender instanceof Player) {
+                                message.sendTranslatable(sender, "command.give.successfully.multiple", targets.size(), count, keyId);
                             }
                         }))
                 )
@@ -260,26 +271,84 @@ public class BCases extends JavaPlugin implements BCasesApi {
                         .argument(new ArgumentString<>("id", new ArrayList<>(prizeMap.keySet())))
                         .argument(new ArgumentInteger<>("count", List.of("1", "10", "25", "50")))
                         .executor(((sender, args) -> {
-                            Object player = args.getOrThrow("player", "Use: /bcases take <player> <key id> <?count> <?duration>");
-                            String keyId = (String) args.getOrThrow("id", "Use: /bcases take <player> <key id> <?count> <?duration>");
+                            Object player = args.getOrThrow("player", "Use: /bcases take <player> <key id> <?count>");
+                            String keyId = (String) args.getOrThrow("id", "Use: /bcases take <player> <key id> <?count>");
                             int count = (int) args.getOrDefault("count", 1);
 
+                            List<Player> targets = new ArrayList<>();
 
-                            if (player instanceof Player pl) {
-                                User user = database.getUser(pl);
+                            if ("*".equals(player)) {
+                                targets.addAll(Bukkit.getOnlinePlayers());
+                            } else if (player instanceof Player) {
+                                targets.add((Player) player);
+                            } else {
+                                message.sendTranslatable(sender, "command.take.failed");
+                                return;
+                            }
+
+                            int totalRemoved = 0;
+                            for (Player target : targets) {
+                                User user = database.getUser(target);
                                 List<CaseKey> keys = new ArrayList<>(user.getKeysOfType(keyId));
-
                                 int removed = Math.min(count, keys.size());
                                 for (int i = 0; i < removed; i++) {
                                     user.removeKey(keys.get(i));
                                 }
-                                if (sender instanceof Player) {
-                                    message.sendTranslatable(sender, "command.take.successfully", keyId, removed, pl.getName());
-                                }
-                            } else {
-                                message.sendTranslatable(sender, "command.take.failed");
+                                totalRemoved += removed;
                             }
 
+                            if (sender instanceof Player) {
+                                message.sendTranslatable(sender, "command.take.successfully.multiple", targets.size(), totalRemoved, keyId);
+                            }
+                        }))
+                )
+                .addSubCommand(new Command<CommandSender>("clear")
+                        .requires(new RequiresPermission<>("bcases.admin.clear"))
+                        .argument(new MultiArgument<>("player",
+                                new ArgumentPlayer<>("player"),
+                                new ArgumentString<>("player")
+                        ))
+                        .executor(((sender, args) -> {
+                            Object player = args.getOrThrow("player", "Use: /bcases clear <player>");
+
+                            List<Player> targets = new ArrayList<>();
+                            List<String> offlineTargets = new ArrayList<>();
+
+                            if ("*".equals(player)) {
+                                targets.addAll(Bukkit.getOnlinePlayers());
+                            } else if (player instanceof Player) {
+                                targets.add((Player) player);
+                            } else {
+                                offlineTargets.add((String) player);
+                            }
+
+                            int totalRemoved = 0;
+                            for (Player target : targets) {
+                                User user = database.getUser(target);
+                                List<CaseKey> allKeys = user.getAllKeys();
+                                int removed = allKeys.size();
+                                for (CaseKey key : allKeys) {
+                                    user.removeKey(key);
+                                }
+                                totalRemoved += removed;
+                            }
+                            for (String name : offlineTargets) {
+                                database.loadUser(name, null).thenAccept(user -> {
+                                    List<CaseKey> allKeys = user.getAllKeys();
+                                    int removed = allKeys.size();
+                                    for (CaseKey key : allKeys) {
+                                        user.removeKey(key);
+                                    }
+                                    message.sendTranslatable(sender, "command.clear.successfully.offline", removed, name);
+                                }).exceptionally(e -> {
+                                    message.sendTranslatable(sender, "command.clear.failed", name);
+                                    return null;
+                                });
+                            }
+
+                            if (!targets.isEmpty() && sender instanceof Player) {
+                                message.sendTranslatable(sender, "command.clear.successfully.multiple", targets.size(), totalRemoved);
+                            }
                         }))
                 )
                 .addSubCommand(new Command<CommandSender>("remove")
@@ -318,7 +387,6 @@ public class BCases extends JavaPlugin implements BCasesApi {
                             message.sendTranslatable(sender, "command.set.successfully");
                         }))
                 )
-
                 .addSubCommand(new Command<CommandSender>("play")
                         .requires(new RequiresPermission<>("bcases.admin.play"))
                         .requires(sender -> sender instanceof Player)

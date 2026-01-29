@@ -10,13 +10,37 @@
       "ru_RU": "&a[✔] &fУспешно выдал &cофлайн&f игроку {} {} ключей от кейса {}",
       "en_UK": "&a[✔] &fSuccessfully gave &coffline&f player {} {} crate keys for {}"
     },
+    "command.give.successfully.multiple": {
+      "ru_RU": "&a[✔] &fУспешно выдал {} игрокам по {} ключей от кейса {}",
+      "en_UK": "&a[✔] &fSuccessfully gave {} players {} crate keys each for {}"
+    },
     "command.take.successfully": {
       "ru_RU": "&a[✔] &fУспешно удалил ключи {} в количестве {} у игрока {}",
       "en_UK": "&a[✔] &fSuccessfully removed {} keys (amount: {}) from player {}"
     },
+    "command.take.successfully.multiple": {
+      "ru_RU": "&a[✔] &fУспешно удалил у {} игроков по {} ключей от кейса {}",
+      "en_UK": "&a[✔] &fSuccessfully removed {} keys from {} players for crate {}"
+    },
     "command.take.failed": {
       "ru_RU": "&c[❌] &fНевозможно удалить ключи у оффлайн игрока!",
       "en_UK": "&c[❌] &fCannot remove keys from an offline player!"
+    },
+    "command.clear.successfully": {
+      "ru_RU": "&a[✔] &fУспешно удалил {} ключей у игрока {}",
+      "en_UK": "&a[✔] &fSuccessfully removed {} keys from player {}"
+    },
+    "command.clear.successfully.offline": {
+      "ru_RU": "&a[✔] &fУспешно удалил {} ключей у &cофлайн&f игрока {}",
+      "en_UK": "&a[✔] &fSuccessfully removed {} keys from &coffline&f player {}"
+    },
+    "command.clear.successfully.multiple": {
+      "ru_RU": "&a[✔] &fУспешно удалил {} ключей у {} игроков",
+      "en_UK": "&a[✔] &fSuccessfully removed {} keys from {} players"
+    },
+    "command.clear.failed": {
+      "ru_RU": "&c[❌] &fНе удалось очистить ключи игрока {}",
+      "en_UK": "&c[❌] &fFailed to clear keys for player {}"
     },
     "command.remove.successfully": {
       "ru_RU": "&a[✔] &fУспешно удалил блок на координатах {} {} {}",

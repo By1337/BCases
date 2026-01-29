@@ -6,7 +6,6 @@ database:
   url: 'jdbc:mariadb://<IP>:<PORT>/bcases'
   #url: 'jdbc:mysql://<IP>:<PORT>/bcases' # если у вас mysql то используйте этот url
 
-
 time-format:
   ago: 'назад'
   in: 'через'

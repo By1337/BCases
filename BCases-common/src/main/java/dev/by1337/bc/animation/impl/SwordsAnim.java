@@ -21,8 +21,10 @@ import org.bukkit.Material;
 import org.bukkit.Particle;
 import org.bukkit.Sound;
 import org.bukkit.block.Block;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.by1337.blib.geom.Vec3d;
 import org.by1337.blib.geom.Vec3f;
@@ -145,7 +147,10 @@ public class SwordsAnim extends AbstractAnimation {
         armorStand.setSmall(true);
         armorStand.setInvisible(true);
         armorStand.setNoGravity(true);
-        armorStand.setEquipment(EquipmentSlot.HEAD, new ItemStack(Material.NETHERITE_SWORD));
+        ItemStack sword = new ItemStack(Material.NETHERITE_SWORD);
+        sword.addUnsafeEnchantment(Enchantment.DAMAGE_ALL, 2);
+        sword.addItemFlags(ItemFlag.HIDE_ENCHANTS);
+        armorStand.setEquipment(EquipmentSlot.HEAD, sword);
         armorStand.setHeadPose(
                 new Vec3f(
                         (float) Math.toDegrees(Math.toRadians(180)),

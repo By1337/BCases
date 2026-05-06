@@ -1,6 +1,7 @@
 package dev.by1337.bc.addon;
 
 import dev.by1337.bc.BCasesApi;
+import dev.by1337.core.util.reflect.ClasspathUtil;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.Plugin;
 import org.by1337.blib.configuration.YamlContext;
@@ -16,7 +17,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
-public class AddonLoader implements Closeable{
+public class AddonLoader implements Closeable {
 
     private static final Logger LOGGER = LoggerFactory.getLogger("BCases#AddonLoader");
     private final Plugin plugin;
@@ -37,7 +38,9 @@ public class AddonLoader implements Closeable{
             if (file.getName().endsWith(".jar")) {
                 try {
                     AddonDescription description = new AddonDescription(readFileContentFromJar(file));
-                    AddonClassLoader addonClassLoader = new AddonClassLoader(this.getClass().getClassLoader(), description, plugin, file, this, bCasesApi);
+                    AddonClassLoader addonClassLoader = new AddonClassLoader(this.getClass().getClassLoader(), description, plugin,
+                            ClasspathUtil.fixJar(file, plugin, false),
+                            this, bCasesApi);
                     loaders.add(addonClassLoader);
                     addons.put(description.name(), addonClassLoader.addon());
                 } catch (Throwable e) {

@@ -158,7 +158,7 @@ public class CaseBlockImpl extends Placeholder implements CaseBlock, Closeable {
         for (String giveCommand : prize.giveCommands()) {
             try {
                 CommandRegistry.COMMAND.process(context, new StringReader(message.setPlaceholders(player, giveCommand)));
-            } catch (Throwable e) {
+            } catch (Exception e) {
                 plugin.getSLF4JLogger().error("Failed to run command: {}", giveCommand, e);
             }
         }

@@ -7,7 +7,7 @@
 # [GIVE] <item base64> <?min> <?max> - give an item to the player. To get an item in base64 format, use the command /bcases dump
 # [TITLE] <"Title\nSubTitle"> <?fadeIn> <?stay> <?fadeOut> - send a title message to the player
 # [ACTION_BAR] <msg> - send an action bar message to the player
-
+# [sound] <sound> <volume> <pitch>
 prizes:
   default: # Prize set "default"
     # First prize

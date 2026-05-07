@@ -2,14 +2,12 @@ package dev.by1337.bc.command;
 
 import dev.by1337.bc.bd.User;
 import org.bukkit.Bukkit;
+import org.bukkit.Sound;
 import org.bukkit.inventory.ItemStack;
 import org.by1337.blib.BLib;
 import org.by1337.blib.command.Command;
 import org.by1337.blib.command.CommandException;
-import org.by1337.blib.command.argument.ArgumentInteger;
-import org.by1337.blib.command.argument.ArgumentString;
-import org.by1337.blib.command.argument.ArgumentStrings;
-import org.by1337.bmenu.Menu;
+import org.by1337.blib.command.argument.*;
 
 import java.util.Random;
 
@@ -26,7 +24,7 @@ public class CommandRegistry {
                             String key = (String) args.getOrThrow("key", "Use: [TAKE_KEY] <key>");
                             User user = sender.caseBlock().getDatabase().getUser(sender.player());
                             var list = user.getKeysOfType(key);
-                            if (list.isEmpty()){
+                            if (list.isEmpty()) {
                                 throw new CommandException("Player {} does not have a key of type {}", sender.player(), key);
                             }
                             user.removeKey(list.get(0));
@@ -49,6 +47,18 @@ public class CommandRegistry {
                         .executor((sender, args) -> {
                             String msg = (String) args.getOrDefault("msg", "");
                             BLib.getApi().getMessage().sendMsg(sender.player(), msg);
+                        })
+        ).addSubCommand(
+                new Command<CommandContext>("[SOUND]")
+                        .aliases("[sound]")
+                        .argument(new ArgumentSound<>("sound"))
+                        .argument(new ArgumentDouble<>("volume"))
+                        .argument(new ArgumentDouble<>("pitch"))
+                        .executor((sender, args) -> {
+                            Sound s = (Sound) args.getOrThrow("sound", "[sound] <sound> <volume> <pitch>");
+                            double volume = (double) args.getOrDefault("volume", 1);
+                            double pitch = (double) args.getOrDefault("pitch", 1);
+                            BLib.getApi().getMessage().sendSound(sender.player(), s, (float) volume, (float) pitch);
                         })
         ).addSubCommand(
                 new Command<CommandContext>("[BROADCAST]")
@@ -79,8 +89,8 @@ public class CommandRegistry {
 
                             ItemStack itemStack = BLib.getApi().getItemStackSerialize().deserialize(item);
 
-                            if (min > 0 && max > 0){
-                                if (min > max){
+                            if (min > 0 && max > 0) {
+                                if (min > max) {
                                     throw new CommandException("{} cannot be less than {}! Command [GIVE] {} {} {}", max, min, item, min, max);
                                 }
                                 Random random = new Random();

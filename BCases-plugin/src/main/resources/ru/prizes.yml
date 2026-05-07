@@ -1,12 +1,13 @@
 # Команды
-# [TAKE_KEY] <key> - забрать у игрока один указанный ключ
-# [PLAY] <animation> <prizes> - запустить анимацию
-# [MESSAGE] <msg> - отправить игроку сообщение
-# [BROADCAST] <msg> - отправить сообщение всем игрокам на сервере
-# [CONSOLE] <cmd> - выполнить команду от консоли
-# [GIVE] <item base64> <?min> <?max> - выдать игроку предмет. Чтобы получить предмет в виде base64 используйте команду /bcases dump
-# [TITLE] <"Title\nSubTitle"> <?fadeIn> <?stay> <?fadeOut> - отправить title игроку
-# [ACTION_BAR] <msg> - отправить action bar игроку
+# [take_key] <key> - забрать у игрока один указанный ключ
+# [play] <animation> <prizes> - запустить анимацию
+# [message] <msg> - отправить игроку сообщение
+# [broadcast] <msg> - отправить сообщение всем игрокам на сервере
+# [console] <cmd> - выполнить команду от консоли
+# [give] <item base64> <?min> <?max> - выдать игроку предмет. Чтобы получить предмет в виде base64 используйте команду /bcases dump
+# [title] <"Title\nSubTitle"> <?fadeIn> <?stay> <?fadeOut> - отправить title игроку
+# [action_bar] <msg> - отправить action bar игроку
+# [sound] <sound> <volume> <pitch>
 
 prizes:
   default: # Набор призов default

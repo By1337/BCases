@@ -1,6 +1,7 @@
 package dev.by1337.bc.addon;
 
 import dev.by1337.bc.BCasesApi;
+import org.bukkit.Bukkit;
 import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -12,6 +13,10 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.Enumeration;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.jar.JarEntry;
+import java.util.jar.JarFile;
 
 public class AddonClassLoader extends URLClassLoader {
     private final Plugin plugin;
@@ -20,6 +25,8 @@ public class AddonClassLoader extends URLClassLoader {
     private final AbstractAddon addon;
     private final File file;
     private final BCasesApi bCasesApi;
+    private final JarFile jar;
+    private final Map<String, Class<?>> classes = new ConcurrentHashMap<>();
 
     public AddonClassLoader(@Nullable ClassLoader parent, AddonDescription description, Plugin plugin, File file, AddonLoader loader, BCasesApi bCasesApi) throws MalformedURLException, InvalidAddonException {
         super(new URL[]{file.toURI().toURL()}, parent);
@@ -29,7 +36,11 @@ public class AddonClassLoader extends URLClassLoader {
         this.loader = loader;
         this.file = file;
         this.bCasesApi = bCasesApi;
-
+        try {
+            jar = new JarFile(file);
+        } catch (IOException e) {
+            throw new InvalidAddonException("Failed to open jar file: " + file.getPath(), e);
+        }
         try {
             Class<?> jarClass;
             try {
@@ -87,5 +98,35 @@ public class AddonClassLoader extends URLClassLoader {
             }
         }
         throw new ClassNotFoundException(name);
+    }
+
+    @Override
+    protected Class<?> findClass(String name) throws ClassNotFoundException {
+        Class<?> result = this.classes.get(name);
+        if (result != null) return result;
+        String path = name.replace('.', '/').concat(".class");
+        JarEntry entry = this.jar.getJarEntry(path);
+        if (entry != null) {
+            byte[] classBytes;
+            try (var in = jar.getInputStream(entry)) {
+                classBytes = in.readAllBytes();
+            } catch (IOException ex) {
+                throw new ClassNotFoundException(name, ex);
+            }
+            classBytes = Bukkit.getServer().getUnsafe().processClass(plugin.getDescription(), path, classBytes);
+            result = defineClass(name, classBytes, 0, classBytes.length);
+            classes.put(name, result);
+            return result;
+        }
+        return super.findClass(name);
+    }
+
+    @Override
+    public void close() throws IOException {
+        try {
+            super.close();
+        } finally {
+            jar.close();
+        }
     }
 }

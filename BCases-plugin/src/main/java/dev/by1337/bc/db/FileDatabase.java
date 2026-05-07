@@ -155,7 +155,7 @@ public class FileDatabase implements Database, Listener {
             DefaultNbtByteBuffer buffer = new DefaultNbtByteBuffer(
                     Files.readAllBytes(file.toPath())
             );
-            return CaseKey.LIST_CODEC.decode(NbtOps.INSTANCE, NbtType.LIST.read(buffer)).getOrThrow().getFirst();
+            return new ArrayList<>(CaseKey.LIST_CODEC.decode(NbtOps.INSTANCE, NbtType.LIST.read(buffer)).getOrThrow().getFirst());
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

@@ -36,7 +36,8 @@ public class PrizeMapTest {
                 "Test",
                 true,
                 List.of("cmd1", "cmd2"),
-                "STONE"
+                "STONE",
+                0
         );
     }
 }

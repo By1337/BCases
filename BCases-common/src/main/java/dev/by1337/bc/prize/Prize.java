@@ -26,7 +26,8 @@ public class Prize extends Placeholder implements WeightedItem<Prize> {
             Codec.STRING.fieldOf("display_name").forGetter(Prize::displayName),
             Codec.BOOL.optionalFieldOf("enchanted", false).forGetter(Prize::enchanted),
             Codec.STRING.listOf().fieldOf("give_commands").forGetter(Prize::giveCommands),
-            Codec.STRING.fieldOf("material").forGetter(Prize::material)
+            Codec.STRING.fieldOf("material").forGetter(Prize::material),
+            Codec.INT.optionalFieldOf("model_data", 0).forGetter(Prize::modelData)
     ).apply(instance, Prize::new));
 
     private double chance;
@@ -36,13 +37,15 @@ public class Prize extends Placeholder implements WeightedItem<Prize> {
     private String material;
     private Component displayNameComponent;
     private ItemStack itemStack;
+    private int modelData;
 
-    public Prize(double chance, String displayName, boolean enchanted, List<String> giveCommands, String material) {
+    public Prize(double chance, String displayName, boolean enchanted, List<String> giveCommands, String material, int modelData) {
         this.chance = chance;
         this.displayName = displayName;
         this.enchanted = enchanted;
         this.giveCommands = giveCommands;
         this.material = material;
+        this.modelData = modelData;
         if (BLib.getApi() == null) { // in test?
             displayNameComponent = null;
             itemStack = null;
@@ -53,6 +56,9 @@ public class Prize extends Placeholder implements WeightedItem<Prize> {
                 if (enchanted) {
                     m.addEnchant(Enchantment.ARROW_DAMAGE, 1, true);
                     m.addItemFlags(ItemFlag.HIDE_ENCHANTS);
+                }
+                if (modelData > 0) {
+                    m.setCustomModelData(modelData);
                 }
                 m.displayName(displayNameComponent);
             });
@@ -139,16 +145,24 @@ public class Prize extends Placeholder implements WeightedItem<Prize> {
         this.itemStack = itemStack;
     }
 
+    public int modelData() {
+        return modelData;
+    }
+
+    public void setModelData(int modelData) {
+        this.modelData = modelData;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Prize prize = (Prize) o;
-        return Double.compare(chance, prize.chance) == 0 && enchanted == prize.enchanted && Objects.equals(displayName, prize.displayName) && Objects.equals(giveCommands, prize.giveCommands) && Objects.equals(material, prize.material);
+        return Double.compare(chance, prize.chance) == 0 && enchanted == prize.enchanted && Objects.equals(displayName, prize.displayName) && Objects.equals(giveCommands, prize.giveCommands) && Objects.equals(material, prize.material) && modelData == prize.modelData;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(chance, displayName, enchanted, giveCommands, material);
+        return Objects.hash(chance, displayName, enchanted, giveCommands, material, modelData);
     }
 }
